@@ -44,7 +44,8 @@ import androidx.compose.ui.platform.LocalContext
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onNavigateToAppointments: () -> Unit = {}
+    onNavigateToAppointments: () -> Unit = {},
+    onNavigateToCallDoctor: () -> Unit = {}
 ) {
     // Получаем контекст приложения
     val context = LocalContext.current
@@ -79,10 +80,13 @@ fun HomeScreen(
         if (lastMessage?.sender == "ASSISTANT" && ttsManager.isReady()) {
             // Озвучиваем последний ответ помощника
             ttsManager.speak(lastMessage.text) {
-                // Проверяем, нужна ли навигация
+                // Проверяем, нужна ли навигация на основе рекомендации помощника
                 when (currentState.lastAction) {
                     "NAVIGATE_TO_APPOINTMENT" -> {
                         onNavigateToAppointments()
+                    }
+                    "CALL_HOME_DOCTOR" -> {
+                        onNavigateToCallDoctor()
                     }
                     // Другие действия можно обработать здесь
                 }
