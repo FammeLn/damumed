@@ -66,3 +66,25 @@ data class AppointmentDoctorDto(
     val phoneNumber: String,
     val workplace: String
 )
+
+/**
+ * DTO для запроса к голосовому помощнику
+ */
+data class AssistantRequest(
+    // Распознанный текст от пользователя
+    val text: String
+)
+
+/**
+ * DTO для ответа голосового помощника
+ */
+data class AssistantResponse(
+    // Текстовый ответ на казахском языке
+    val text: String,
+
+    // Действие, которое должно быть выполнено на клиенте
+    val action: String = "NONE",
+
+    // Дополнительные данные (например, ID врача для навигации)
+    val metadata: Map<String, String> = emptyMap()
+)

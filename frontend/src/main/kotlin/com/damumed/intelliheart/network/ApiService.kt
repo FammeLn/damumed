@@ -1,6 +1,8 @@
 package com.damumed.intelliheart.network
 
 import com.damumed.intelliheart.network.dto.AppointmentResponse
+import com.damumed.intelliheart.network.dto.AssistantRequest
+import com.damumed.intelliheart.network.dto.AssistantResponse
 import com.damumed.intelliheart.network.dto.CreateAppointmentRequest
 import com.damumed.intelliheart.network.dto.DoctorResponse
 import retrofit2.http.Body
@@ -65,4 +67,13 @@ interface ApiService {
     suspend fun getPatientActiveAppointments(
         @Path("patientId") patientId: Long
     ): List<AppointmentResponse>
+
+    /**
+     * POST /api/assistant/query
+     * Отправить запрос голосовому помощнику и получить умный ответ
+     */
+    @POST("/api/assistant/query")
+    suspend fun queryAssistant(
+        @Body request: AssistantRequest
+    ): AssistantResponse
 }

@@ -59,7 +59,19 @@ fun IntelliHeartApp() {
             ) {
                 // Главный экран
                 composable(Screen.HomeScreen.route) {
-                    HomeScreen()
+                    HomeScreen(
+                        onNavigateToAppointments = {
+                            // Переходим на экран записи к врачу
+                            currentRoute.value = Screen.AppointmentScreen.route
+                            navController.navigate(Screen.AppointmentScreen.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                lazyRestoreState = true
+                                restoreState = true
+                            }
+                        }
+                    )
                 }
 
                 // Экран записи к врачу - используем новый экран с врачами
