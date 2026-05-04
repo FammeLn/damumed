@@ -35,7 +35,11 @@ import com.damumed.intelliheart.voice.VoiceAssistantManager
  * Включает FloatingActionButton с микрофоном для голосового помощника
  */
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    onNavigateToAppointments: () -> Unit = {},
+    onNavigateToCallDoctor: () -> Unit = {}
+) {
     // Получаем контекст приложения
     val context = LocalContext.current
 
@@ -101,7 +105,8 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     .padding(vertical = 8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
-                )
+                ),
+                onClick = onNavigateToCallDoctor
             ) {
                 Text(
                     text = "Дәрігерді үйге шақыру",
@@ -113,7 +118,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
             // Кнопка для записи к врачу в клинику
             Button(
-                onClick = { /* TODO: Реализовать переход на экран записи */ },
+                onClick = onNavigateToAppointments,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),

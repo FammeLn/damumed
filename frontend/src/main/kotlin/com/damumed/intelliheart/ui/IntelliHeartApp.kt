@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.damumed.intelliheart.ui.components.BottomNavigationBar
 import com.damumed.intelliheart.ui.navigation.Screen
 import com.damumed.intelliheart.ui.screens.AppointmentScreen
+import com.damumed.intelliheart.ui.screens.CallDoctorHomeScreen
 import com.damumed.intelliheart.ui.screens.HomeScreen
 import com.damumed.intelliheart.ui.screens.MedicalRecordScreen
 import com.damumed.intelliheart.ui.screens.ProfileScreen
@@ -33,22 +34,25 @@ fun IntelliHeartApp() {
     Scaffold(
         bottomBar = {
             // Отображаем нижнюю навигационную панель
-            BottomNavigationBar(
-                currentRoute = currentRoute.value,
-                onNavigate = { screen ->
-                    // Обновляем текущий маршрут и переходим на экран
-                    currentRoute.value = screen.route
-                    navController.navigate(screen.route) {
-                        // Избегаем создания множественных копий экранов в back stack
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
+            // Скрываем её на экране вызова врача на дом
+            if (currentRoute.value != Screen.CallDoctorHomeScreen.route) {
+                BottomNavigationBar(
+                    currentRoute = currentRoute.value,
+                    onNavigate = { screen ->
+                        // Обновляем текущий маршрут и переходим на экран
+                        currentRoute.value = screen.route
+                        navController.navigate(screen.route) {
+                            // Избегаем создания множественных копий экранов в back stack
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            lazyRestoreState = true
+                            // Не разрешаем несколько копий одного экрана
+                            restoreState = true
                         }
-                        lazyRestoreState = true
-                        // Не разрешаем несколько копий одного экрана
-                        restoreState = true
                     }
-                }
-            )
+                )
+            }
         }
     ) { innerPadding ->
         // Основной контент - NavHost для переключения между экранами
@@ -70,11 +74,16 @@ fun IntelliHeartApp() {
                                 lazyRestoreState = true
                                 restoreState = true
                             }
+                        },
+                        onNavigateToCallDoctor = {
+                            // Переходим на экран вызова врача на дом
+                            currentRoute.value = Screen.CallDoctorHomeScreen.route
+                            navController.navigate(Screen.CallDoctorHomeScreen.route)
                         }
                     )
                 }
 
-                // Экран записи к врачу - используем новый экран с врачами
+                // Экран записи к врачу
                 composable(Screen.AppointmentScreen.route) {
                     AppointmentScreen()
                 }
@@ -88,7 +97,19 @@ fun IntelliHeartApp() {
                 composable(Screen.ProfileScreen.route) {
                     ProfileScreen()
                 }
+
+                // Экран вызова врача на дом
+                composable(Screen.CallDoctorHomeScreen.route) {
+                    CallDoctorHomeScreen(
+                        onSuccess = {
+                            // Возвращаемся на главный экран после успешной отправки
+                            currentRoute.value = Screen.HomeScreen.route
+                            navController.popBackStack()
+                        }
+                    )
+                }
             }
         }
     }
 }
+

@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.HealthAndSafety
+import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -42,6 +43,13 @@ sealed class Screen(
         route = "profile",
         displayName = "Профиль",
         icon = Icons.Default.Person
+    )
+
+    // Экран вызова врача на дом (без навигации в BottomNav)
+    object CallDoctorHomeScreen : Screen(
+        route = "call_doctor_home",
+        displayName = "Дәрігерді үйге шақыру",
+        icon = Icons.Default.LocalHospital
     )
 
     companion object {
