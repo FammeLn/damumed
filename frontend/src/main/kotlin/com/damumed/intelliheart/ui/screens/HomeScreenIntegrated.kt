@@ -45,7 +45,9 @@ import androidx.compose.ui.platform.LocalContext
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onNavigateToAppointments: () -> Unit = {},
-    onNavigateToCallDoctor: () -> Unit = {}
+    onNavigateToCallDoctor: () -> Unit = {},
+    onNavigateToRecords: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
 ) {
     // Получаем контекст приложения
     val context = LocalContext.current
@@ -88,7 +90,13 @@ fun HomeScreen(
                     "CALL_HOME_DOCTOR" -> {
                         onNavigateToCallDoctor()
                     }
-                    // Другие действия можно обработать здесь
+                    "NAVIGATE_TO_RECORDS" -> {
+                        onNavigateToRecords()
+                    }
+                    "NAVIGATE_TO_PROFILE" -> {
+                        onNavigateToProfile()
+                    }
+                    // Если action не распознан, ничего не делаем
                 }
             }
         }

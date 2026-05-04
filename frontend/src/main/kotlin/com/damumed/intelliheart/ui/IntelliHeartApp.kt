@@ -79,6 +79,28 @@ fun IntelliHeartApp() {
                             // Переходим на экран вызова врача на дом
                             currentRoute.value = Screen.CallDoctorHomeScreen.route
                             navController.navigate(Screen.CallDoctorHomeScreen.route)
+                        },
+                        onNavigateToRecords = {
+                            // Переходим на экран медицинской карты
+                            currentRoute.value = Screen.MedicalRecordScreen.route
+                            navController.navigate(Screen.MedicalRecordScreen.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                lazyRestoreState = true
+                                restoreState = true
+                            }
+                        },
+                        onNavigateToProfile = {
+                            // Переходим на экран профиля
+                            currentRoute.value = Screen.ProfileScreen.route
+                            navController.navigate(Screen.ProfileScreen.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                lazyRestoreState = true
+                                restoreState = true
+                            }
                         }
                     )
                 }
