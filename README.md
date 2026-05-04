@@ -62,7 +62,9 @@ damumed/
 │       │   │   ├── HomeScreenIntegrated.kt  # HomeScreen с голосовым помощником
 │       │   │   ├── AppointmentScreen.kt
 │       │   │   ├── AppointmentScreenNew.kt  # Экран с врачами
-│       │   │   └── AllScreens.kt
+│       │   │   ├── ProfileScreen.kt         # Жеке кабинет (Профиль)
+│       │   │   ├── CallDoctorHomeScreen.kt  # Вызов врача на дом
+│       │   │   └── AllScreens.kt            # MedicalRecordScreen и другие
 │       │   ├── components/              # Compose компоненты (BottomNavigationBar)
 │       │   ├── navigation/              # Навигация (Screen sealed class)
 │       │   ├── theme/                   # Тема приложения
@@ -78,7 +80,17 @@ damumed/
 │           ├── VoiceAssistantManager.kt # Микрофон и распознавание речи
 │           └── TextToSpeechManager.kt   # Озвучивание текста
 │
-└── AGENT_CONTEXT.md                     # Контекст разработки
+├── docs/                                 # Документация
+│   ├── AGENT_CONTEXT.md
+│   ├── API_DOCUMENTATION.md
+│   ├── COMPONENT_INDEX.md
+│   ├── QUICKSTART.md
+│   ├── SECURITY.md
+│   ├── COMPLETION_REPORT.md
+│   ├── FINAL_SUMMARY.txt
+│   └── STATISTICS.md
+│
+└── README.md                             # Основная документация
 ```
 
 ## API Эндпоинты
@@ -237,6 +249,17 @@ cd backend
 
 Разработано с использованием GitHub Copilot CLI  
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+## Полная документация
+
+Подробная документация находится в папке `docs/`:
+
+- **[docs/QUICKSTART.md](docs/QUICKSTART.md)** - Быстрый старт для разработчиков ⭐⭐⭐
+- **[docs/AGENT_CONTEXT.md](docs/AGENT_CONTEXT.md)** - Архитектура проекта и roadmap ⭐⭐⭐
+- **[docs/COMPONENT_INDEX.md](docs/COMPONENT_INDEX.md)** - Полный индекс всех компонентов
+- **[docs/API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md)** - Документация API с примерами
+- **[docs/SECURITY.md](docs/SECURITY.md)** - Чек-лист безопасности
+- **[docs/STATISTICS.md](docs/STATISTICS.md)** - Статистика проекта
 
 ## Лицензия
 
