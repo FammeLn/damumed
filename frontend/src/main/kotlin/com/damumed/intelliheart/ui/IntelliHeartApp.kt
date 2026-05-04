@@ -62,7 +62,7 @@ fun IntelliHeartApp() {
                     HomeScreen()
                 }
 
-                // Экран записи к врачу
+                // Экран записи к врачу - используем новый экран с врачами
                 composable(Screen.AppointmentScreen.route) {
                     AppointmentScreen()
                 }

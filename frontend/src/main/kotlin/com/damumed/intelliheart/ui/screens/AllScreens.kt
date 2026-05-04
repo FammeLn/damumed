@@ -12,27 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * Экран записи к врачу (Жазылу)
- * Содержит список врачей и функциональность для записи на прием
- */
-@Composable
-fun AppointmentScreen(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Дәрігерге жазылу",
-            style = TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        )
-    }
-}
-
-/**
  * Экран медицинской карты (Медкарта)
  * Отображает историю болезни и результаты прошлых приемов
  */
