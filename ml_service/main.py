@@ -78,12 +78,11 @@ async def startup_event():
     global model, vectorizer
     
     try:
-        # Определяем пути к файлам моделей
+        # Определяем пути к файлам моделей (ищем в текущей директории ml_service)
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        parent_dir = os.path.dirname(current_dir)
         
-        model_path = os.path.join(parent_dir, "intent_model.pkl")
-        vectorizer_path = os.path.join(parent_dir, "vectorizer.pkl")
+        model_path = os.path.join(current_dir, "intent_model.pkl")
+        vectorizer_path = os.path.join(current_dir, "vectorizer.pkl")
         
         logger.info(f"Загрузка модели из {model_path}")
         logger.info(f"Загрузка векторизатора из {vectorizer_path}")
