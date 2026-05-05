@@ -38,7 +38,9 @@ import com.damumed.intelliheart.voice.VoiceAssistantManager
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onNavigateToAppointments: () -> Unit = {},
-    onNavigateToCallDoctor: () -> Unit = {}
+    onNavigateToCallDoctor: () -> Unit = {},
+    onNavigateToRecords: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
 ) {
     // Получаем контекст приложения
     val context = LocalContext.current
@@ -99,14 +101,13 @@ fun HomeScreen(
 
             // Кнопка для вызова врача на дом
             Button(
-                onClick = { /* TODO: Реализовать логику вызова врача */ },
+                onClick = onNavigateToCallDoctor,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
-                ),
-                onClick = onNavigateToCallDoctor
+                )
             ) {
                 Text(
                     text = "Дәрігерді үйге шақыру",
@@ -136,7 +137,7 @@ fun HomeScreen(
 
             // Кнопка для просмотра медицинской карты
             Button(
-                onClick = { /* TODO: Реализовать переход на экран медицинской карты */ },
+                onClick = onNavigateToRecords,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
@@ -146,6 +147,24 @@ fun HomeScreen(
             ) {
                 Text(
                     text = "Медициналық картамды қарау",
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            // Кнопка для профиля
+            Button(
+                onClick = onNavigateToProfile,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                )
+            ) {
+                Text(
+                    text = "Менің профилім",
                     modifier = Modifier.padding(vertical = 12.dp),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
