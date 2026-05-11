@@ -89,6 +89,18 @@ class AiAssistantService(
 
         // Анализируем текст на наличие ключевых слов для определения интента
         return when {
+            // Интент: вызов врача на дом (приоритетнее записи, если есть слова "үйге" или "шақыру")
+            lowerText.contains("үйге") ||
+            lowerText.contains("шақыру") ||
+            lowerText.contains("домой") ||
+            lowerText.contains("вызов") ||
+            lowerText.contains("на дом") -> {
+                AssistantResponse(
+                    text = "Дәрігерді үйге шақыру операциясын өндіргемін. Қай уақытта көмектесуі керек?",
+                    action = AssistantAction.CALL_HOME_DOCTOR
+                )
+            }
+
             // Интент: запись к врачу
             lowerText.contains("жазылу") ||
             lowerText.contains("дәрігер") ||
@@ -112,18 +124,6 @@ class AiAssistantService(
                 AssistantResponse(
                     text = "Міне, сіздің соңғы талдауларыңыз бен медициналық картаңыз. Осыларды қарап көріңіз.",
                     action = AssistantAction.NAVIGATE_TO_RECORDS
-                )
-            }
-
-            // Интент: вызов врача на дом
-            lowerText.contains("үйге") ||
-            lowerText.contains("шақыру") ||
-            lowerText.contains("домой") ||
-            lowerText.contains("вызов") ||
-            lowerText.contains("на дом") -> {
-                AssistantResponse(
-                    text = "Дәрігерді үйге шақыру операциясын өндіргемін. Қай уақытта көмектесуі керек?",
-                    action = AssistantAction.CALL_HOME_DOCTOR
                 )
             }
 

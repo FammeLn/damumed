@@ -38,7 +38,7 @@ class AiAssistantServiceTest {
         val response = service.processQuery(request)
 
         // Тогда
-        assertEquals(AssistantAction.NAVIGATE_TO_APPOINTMENT.name, response.action)
+        assertEquals(AssistantAction.NAVIGATE_TO_APPOINTMENT, response.action)
         assertNotNull(response.text)
     }
 
@@ -55,7 +55,7 @@ class AiAssistantServiceTest {
         val response = service.processQuery(request)
 
         // Тогда
-        assertEquals(AssistantAction.NAVIGATE_TO_RECORDS.name, response.action)
+        assertEquals(AssistantAction.NAVIGATE_TO_RECORDS, response.action)
         assertNotNull(response.text)
     }
 
@@ -72,7 +72,7 @@ class AiAssistantServiceTest {
         val response = service.processQuery(request)
 
         // Тогда
-        assertEquals(AssistantAction.CALL_HOME_DOCTOR.name, response.action)
+        assertEquals(AssistantAction.CALL_HOME_DOCTOR, response.action)
     }
 
     /**
@@ -88,7 +88,7 @@ class AiAssistantServiceTest {
         val response = service.processQuery(request)
 
         // Тогда
-        assertEquals(AssistantAction.NONE.name, response.action)
+        assertEquals(AssistantAction.NONE, response.action)
         assertNotNull(response.text)
     }
 }

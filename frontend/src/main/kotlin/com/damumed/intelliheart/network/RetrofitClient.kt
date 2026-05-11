@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit
  * Обеспечивает единое подключение к бэкенд API
  */
 object RetrofitClient {
-    // URL базового адреса бэкенда (измените на реальный адрес сервера)
-    private const val BASE_URL = "http://192.168.1.100:8080"
+    // URL базового адреса бэкенда (эмулятор Android использует 10.0.2.2 для localhost)
+    private const val BASE_URL = "http://10.0.2.2:8080/"
 
     // Экземпляр Retrofit клиента (ленивая инициализация)
     private val retrofit: Retrofit by lazy {
