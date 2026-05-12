@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -15,7 +14,7 @@ import com.damumed.intelliheart.ui.components.BottomNavigationBar
 import com.damumed.intelliheart.ui.navigation.Screen
 import com.damumed.intelliheart.ui.screens.AppointmentScreen
 import com.damumed.intelliheart.ui.screens.CallDoctorHomeScreen
-import com.damumed.intelliheart.ui.screens.HomeScreen
+import com.damumed.intelliheart.ui.screens.HomeScreenMain
 import com.damumed.intelliheart.ui.screens.MedicalRecordScreen
 import com.damumed.intelliheart.ui.screens.ProfileScreen
 
@@ -46,7 +45,6 @@ fun IntelliHeartApp() {
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
-                            lazyRestoreState = true
                             // Не разрешаем несколько копий одного экрана
                             restoreState = true
                         }
@@ -63,7 +61,7 @@ fun IntelliHeartApp() {
             ) {
                 // Главный экран
                 composable(Screen.HomeScreen.route) {
-                    HomeScreen(
+                    HomeScreenMain(
                         onNavigateToAppointments = {
                             // Переходим на экран записи к врачу
                             currentRoute.value = Screen.AppointmentScreen.route
@@ -71,7 +69,6 @@ fun IntelliHeartApp() {
                                 popUpTo(navController.graph.startDestinationId) {
                                     saveState = true
                                 }
-                                lazyRestoreState = true
                                 restoreState = true
                             }
                         },
@@ -87,7 +84,6 @@ fun IntelliHeartApp() {
                                 popUpTo(navController.graph.startDestinationId) {
                                     saveState = true
                                 }
-                                lazyRestoreState = true
                                 restoreState = true
                             }
                         },
@@ -98,7 +94,6 @@ fun IntelliHeartApp() {
                                 popUpTo(navController.graph.startDestinationId) {
                                     saveState = true
                                 }
-                                lazyRestoreState = true
                                 restoreState = true
                             }
                         }

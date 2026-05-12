@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,7 +22,7 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
@@ -32,7 +31,7 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
             text = "Жеке кабинет",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1565C0),
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(top = 16.dp)
         )
 
@@ -47,7 +46,7 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -57,7 +56,7 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
                     modifier = Modifier
                         .size(80.dp),
                     shape = RoundedCornerShape(40.dp),
-                    color = Color(0xFFE3F2FD)
+                    color = MaterialTheme.colorScheme.primaryContainer
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Person,
@@ -65,7 +64,7 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
                         modifier = Modifier
                             .padding(16.dp)
                             .size(48.dp),
-                        tint = Color(0xFF1565C0)
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -74,14 +73,14 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
                     text = "Марат Сәлімов",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF212121)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Divider(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
-                    color = Color(0xFFE0E0E0),
+                    color = MaterialTheme.colorScheme.outlineVariant,
                     thickness = 1.dp
                 )
 
@@ -120,7 +119,7 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
                 .fillMaxWidth()
                 .height(56.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFD32F2F)
+                containerColor = MaterialTheme.colorScheme.error
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
@@ -128,7 +127,7 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
                 text = "Шығу",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onError
             )
         }
 
@@ -156,7 +155,7 @@ private fun ProfileInfoField(
             text = label,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF666666),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(0.4f)
         )
 
@@ -164,7 +163,7 @@ private fun ProfileInfoField(
             text = value,
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
-            color = Color(0xFF212121),
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(0.6f)
         )
     }

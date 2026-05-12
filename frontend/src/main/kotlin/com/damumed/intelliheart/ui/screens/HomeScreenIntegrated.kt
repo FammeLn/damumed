@@ -1,6 +1,5 @@
 package com.damumed.intelliheart.ui.screens
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,13 +14,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +43,7 @@ import androidx.compose.ui.platform.LocalContext
  * Полная интеграция микрофона, голосового помощника и озвучивания
  */
 @Composable
-fun HomeScreen(
+fun HomeScreenIntegrated(
     modifier: Modifier = Modifier,
     onNavigateToAppointments: () -> Unit = {},
     onNavigateToCallDoctor: () -> Unit = {},
@@ -54,7 +55,7 @@ fun HomeScreen(
 
     // Получаем ViewModel для управления состоянием экрана
     val viewModel: HomeScreenViewModel = viewModel()
-    val screenState = remember { viewModel.screenState }
+    val screenState = viewModel.screenState
 
     // Создаем менеджер голосового помощника (микрофон)
     val voiceManager = remember { VoiceAssistantManager(context) }
@@ -63,11 +64,11 @@ fun HomeScreen(
     val ttsManager = remember { TextToSpeechManager(context) }
 
     // Устанавливаем callback для микрофона
-    remember {
+    LaunchedEffect(voiceManager) {
         voiceManager.setOnResultCallback { text ->
             // Обрабатываем распознанный текст
             viewModel.processRecognizedText(text)
-            Toast.makeText(context, "Танығаны: $text", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Танылған мәтін: $text", Toast.LENGTH_SHORT).show()
         }
 
         voiceManager.setOnErrorCallback { error ->
@@ -112,8 +113,7 @@ fun HomeScreen(
             // Заголовок
             Text(
                 text = "Қайырлы күн!",
-                style = TextStyle(
-                    fontSize = 24.sp,
+                style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 ),
@@ -123,8 +123,7 @@ fun HomeScreen(
 
             Text(
                 text = "Сіздің денсаулығыңыз – біздің басты байлығымыз.",
-                style = TextStyle(
-                    fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onBackground
                 ),
                 modifier = Modifier
@@ -138,47 +137,51 @@ fun HomeScreen(
                 onClick = { /* TODO: Реализовать логику вызова врача */ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                    .padding(vertical = 4.dp)
             ) {
                 Text(
                     text = "Дәрігерді үйге шақыру",
                     modifier = Modifier.padding(vertical = 8.dp),
-                    fontSize = 13.sp
+                    fontSize = 14.sp
                 )
             }
 
-            Button(
+            FilledTonalButton(
                 onClick = { onNavigateToAppointments() },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                )
+                    .padding(vertical = 4.dp)
             ) {
                 Text(
-                    text = "Дәрігерге қайта",
+                    text = "Дәрігерге жазылу",
                     modifier = Modifier.padding(vertical = 8.dp),
-                    fontSize = 13.sp
+                    fontSize = 14.sp
                 )
             }
 
-            Button(
+            FilledTonalButton(
                 onClick = { /* TODO: Реализовать переход на медкарту */ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary
-                )
+                    .padding(vertical = 4.dp)
             ) {
                 Text(
                     text = "Медициналық картамды қарау",
                     modifier = Modifier.padding(vertical = 8.dp),
-                    fontSize = 13.sp
+                    fontSize = 14.sp
+                )
+            }
+
+            OutlinedButton(
+                onClick = { onNavigateToProfile() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
+                Text(
+                    text = "Жеке кабинет",
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    fontSize = 14.sp
                 )
             }
 
@@ -186,8 +189,7 @@ fun HomeScreen(
             if (currentState.messages.isNotEmpty()) {
                 Text(
                     text = "Диалог",
-                    style = TextStyle(
-                        fontSize = 14.sp,
+                    style = MaterialTheme.typography.titleSmall.copy(
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary
                     ),
@@ -214,8 +216,7 @@ fun HomeScreen(
                 ) {
                     Text(
                         text = "Микрофон батырмасын басыңыз және сұрағыңызды айтыңыз",
-                        style = TextStyle(
-                            fontSize = 13.sp,
+                        style = MaterialTheme.typography.bodySmall.copy(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         textAlign = TextAlign.Center,
@@ -228,8 +229,7 @@ fun HomeScreen(
             if (currentState.error != null) {
                 Text(
                     text = "Қате: ${currentState.error}",
-                    style = TextStyle(
-                        fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodySmall.copy(
                         color = MaterialTheme.colorScheme.error
                     ),
                     modifier = Modifier
@@ -273,7 +273,7 @@ fun HomeScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.Mic,
-                contentDescription = "Голос көмегі"
+                contentDescription = "Дауыс көмекшісі"
             )
         }
     }

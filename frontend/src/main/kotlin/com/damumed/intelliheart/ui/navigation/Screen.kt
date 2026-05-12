@@ -27,21 +27,21 @@ sealed class Screen(
     // Экран записи к врачу
     object AppointmentScreen : Screen(
         route = "appointment",
-        displayName = "Жазылу",
+        displayName = "Дәрігерге жазылу",
         icon = Icons.Default.Menu
     )
 
     // Экран медицинской карты
     object MedicalRecordScreen : Screen(
         route = "medical_record",
-        displayName = "Медкарта",
+        displayName = "Медициналық карта",
         icon = Icons.Default.HealthAndSafety
     )
 
     // Экран профиля
     object ProfileScreen : Screen(
         route = "profile",
-        displayName = "Профиль",
+        displayName = "Жеке кабинет",
         icon = Icons.Default.Person
     )
 

@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,7 +24,7 @@ fun MedicalRecordScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -33,18 +32,17 @@ fun MedicalRecordScreen(modifier: Modifier = Modifier) {
         // Заголовок
         Text(
             text = "Медициналық карта",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF1565C0),
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(top = 8.dp)
         )
 
         // Последние осмотры
         Text(
-            text = "Соңғы осмотрлар",
-            fontSize = 18.sp,
+            text = "Соңғы тексерулер",
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF212121),
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 8.dp)
         )
 
@@ -54,7 +52,7 @@ fun MedicalRecordScreen(modifier: Modifier = Modifier) {
             doctor = "Аяулы Ерлан",
             specialization = "Кардиолог",
             diagnosis = "Артериялық гипертензия (1 сатысы)",
-            notes = "Медикамент атауы өзгертілді. Қабылдау: 2 рет сайын бір жүйеде."
+            notes = "Қабылдау: күніне 2 рет."
         )
 
         // Запись 2
@@ -63,7 +61,7 @@ fun MedicalRecordScreen(modifier: Modifier = Modifier) {
             doctor = "Нурай Қасымова",
             specialization = "Невролог",
             diagnosis = "Мигрень",
-            notes = "Функционалды МРТ атқарылды. Патология табылмады."
+            notes = "Функционалды МРТ жасалды. Патология табылмады."
         )
 
         // Запись 3
@@ -71,21 +69,21 @@ fun MedicalRecordScreen(modifier: Modifier = Modifier) {
             date = "2026-02-10",
             doctor = "Аяулы Ерлан",
             specialization = "Кардиолог",
-            diagnosis = "Профилактикалық прием",
-            notes = "ЭКГ норма бойынша. Келесі бірдей сайын 6 ай қойындағы."
+            diagnosis = "Профилактикалық қабылдау",
+            notes = "ЭКГ нормада. Келесі қабылдау 6 айдан кейін."
         )
 
         // Анализы
         Text(
             text = "Соңғы талдаулар",
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF212121),
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 16.dp)
         )
 
         AnalysisCard(
-            name = "Жалпы қан анализы",
+            name = "Жалпы қан талдауы",
             date = "2026-04-18",
             status = "Норма ✓"
         )
@@ -97,7 +95,7 @@ fun MedicalRecordScreen(modifier: Modifier = Modifier) {
         )
 
         AnalysisCard(
-            name = "Сірке тұзы анализы",
+            name = "Несеп қышқылы талдауы",
             date = "2026-03-15",
             status = "Норма ✓"
         )
@@ -127,7 +125,7 @@ private fun MedicalRecordCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -139,17 +137,20 @@ private fun MedicalRecordCard(
                 Text(
                     text = date,
                     fontSize = 12.sp,
-                    color = Color(0xFF666666),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.SemiBold
                 )
 
                 Text(
                     text = specialization,
                     fontSize = 12.sp,
-                    color = Color(0xFF1565C0),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
-                        .background(Color(0xFFE3F2FD), RoundedCornerShape(4.dp))
+                        .background(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            RoundedCornerShape(6.dp)
+                        )
                         .padding(horizontal = 8.dp, vertical = 2.dp)
                 )
             }
@@ -158,19 +159,19 @@ private fun MedicalRecordCard(
                 text = "Дәрігері: $doctor",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF212121)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Text(
                 text = "Диагноз: $diagnosis",
                 fontSize = 13.sp,
-                color = Color(0xFF424242)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Text(
                 text = notes,
                 fontSize = 12.sp,
-                color = Color(0xFF666666),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Normal
             )
         }
@@ -195,7 +196,7 @@ private fun AnalysisCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -208,23 +209,22 @@ private fun AnalysisCard(
                     text = name,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF212121)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
                     text = date,
                     fontSize = 12.sp,
-                    color = Color(0xFF666666)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             Icon(
                 imageVector = Icons.Filled.FilePresent,
                 contentDescription = "Анализ",
-                tint = Color(0xFF4CAF50),
+                tint = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier.size(24.dp)
             )
         }
     }
 }
-

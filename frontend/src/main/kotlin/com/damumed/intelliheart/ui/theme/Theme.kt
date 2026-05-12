@@ -1,7 +1,6 @@
 package com.damumed.intelliheart.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkMode
-import androidx.compose.material3.ColorScheme
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -63,7 +62,7 @@ private val DarkColorScheme = darkColorScheme(
  */
 @Composable
 fun IntelliHeartTheme(
-    useDarkTheme: Boolean = isSystemInDarkMode(),
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

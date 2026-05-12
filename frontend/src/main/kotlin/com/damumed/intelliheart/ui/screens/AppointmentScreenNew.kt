@@ -104,7 +104,7 @@ fun AppointmentScreen(modifier: Modifier = Modifier) {
 
                         // Кнопка для повторной попытки загрузки
                         Button(onClick = { viewModel.loadDoctors() }) {
-                            Text(text = "Қайта өндіру")
+                            Text(text = "Қайта жүктеу")
                         }
                     }
                 }

@@ -12,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,19 +28,19 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
 
     // Список доступных симптомов на казахском
     val symptoms = listOf(
-        "Өтке",           // Лихорадка
-        "Бас ауруы",      // Головная боль
-        "Қоқылту",        // Кашель
-        "Құрғақ аузы",    // Сухость во рту
-        "Томалық",        // Слабость
-        "Өңі іріңгей",    // Тошнота
-        "Еңбек жүрегінде ауру" // Боль в груди
+        "Қызба",             // Лихорадка
+        "Бас ауруы",          // Головная боль
+        "Жөтел",             // Кашель
+        "Ауыздың құрғауы",   // Сухость во рту
+        "Әлсіздік",          // Слабость
+        "Жүрек айну",        // Тошнота
+        "Кеуде ауыруы"       // Боль в груди
     )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -49,9 +48,9 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
         // Заголовок
         Text(
             text = "Дәрігерді үйге шақыру",
-            fontSize = 28.sp,
+            style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1565C0),
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(top = 8.dp)
         )
 
@@ -62,7 +61,7 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
                 .padding(vertical = 8.dp),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFE3F2FD)
+                containerColor = MaterialTheme.colorScheme.primaryContainer
             )
         ) {
             Row(
@@ -75,14 +74,14 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
                 Icon(
                     imageVector = Icons.Filled.Home,
                     contentDescription = "Үйге",
-                    tint = Color(0xFF1565C0),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.size(24.dp)
                 )
 
                 Text(
-                    text = "Біздің дәрігері сіздің үйіңізге келіп, толық консультация жүргізеді",
+                    text = "Біздің дәрігеріңіз сіздің үйіңізге келіп, толық консультация жүргізеді",
                     fontSize = 13.sp,
-                    color = Color(0xFF1565C0),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -93,7 +92,7 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
             text = "Симптомдарыңыз:",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF212121)
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Card(
@@ -105,7 +104,7 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -127,14 +126,14 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
                                 }
                             },
                             colors = CheckboxDefaults.colors(
-                                checkedColor = Color(0xFF1565C0)
+                                checkedColor = MaterialTheme.colorScheme.primary
                             )
                         )
 
                         Text(
                             text = symptom,
                             fontSize = 14.sp,
-                            color = Color(0xFF212121)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -143,25 +142,25 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
 
         // Раздел: Адрес
         Text(
-            text = "Сіздің адресіңіз:",
+            text = "Мекенжайыңыз:",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF212121),
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 8.dp)
         )
 
         OutlinedTextField(
             value = address,
             onValueChange = { address = it },
-            label = { Text("Өл. облысы, қаласы, көшесі, үй номері") },
+            label = { Text("Облыс, қала, көше, үй нөмірі") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFF1565C0),
-                unfocusedBorderColor = Color(0xFFDDDDDD),
-                focusedLabelColor = Color(0xFF1565C0)
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                focusedLabelColor = MaterialTheme.colorScheme.primary
             ),
             maxLines = 4
         )
@@ -181,8 +180,8 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
                 .height(56.dp),
             enabled = address.isNotEmpty() && selectedSymptoms.isNotEmpty(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF1565C0),
-                disabledContainerColor = Color(0xFFCCCCCC)
+                containerColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
@@ -210,7 +209,7 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
             title = { Text("Өтінім қабылданды") },
             text = {
                 Text(
-                    "Сіздің өтінімі қабылданды. Дәрігер 30 минут ішінде сізге хабарласады.",
+                    "Сіздің өтініміңіз қабылданды. Дәрігер 30 минут ішінде сізге хабарласады.",
                     fontSize = 14.sp
                 )
             },
@@ -221,10 +220,10 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
                         onSuccess()
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF1565C0)
+                        containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
-                    Text("Түсінік")
+                    Text("Түсінікті")
                 }
             }
         )
