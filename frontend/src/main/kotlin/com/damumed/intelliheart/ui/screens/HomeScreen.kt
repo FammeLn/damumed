@@ -1,6 +1,10 @@
 package com.damumed.intelliheart.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.damumed.intelliheart.voice.VoiceAssistantManager
 
 /**
@@ -50,6 +56,15 @@ fun HomeScreenMain(
 
     // Создаем менеджер голосового помощника
     val voiceManager = remember { VoiceAssistantManager(context) }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            voiceManager.startListening()
+        } else {
+            Toast.makeText(context, "Микрофонға рұқсат берілмеді", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     // Устанавливаем callback для результатов распознавания
     LaunchedEffect(context) {
@@ -61,6 +76,12 @@ fun HomeScreenMain(
 
         voiceManager.setOnErrorCallback { error ->
             Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            voiceManager.destroy()
         }
     }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -174,8 +195,15 @@ fun HomeScreenMain(
         // FloatingActionButton с микрофоном в правом нижнем углу
         FloatingActionButton(
             onClick = {
-                // Запускаем распознавание речи
-                voiceManager.startListening()
+                val hasAudioPermission = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.RECORD_AUDIO
+                ) == PackageManager.PERMISSION_GRANTED
+                if (hasAudioPermission) {
+                    voiceManager.startListening()
+                } else {
+                    permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                }
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)

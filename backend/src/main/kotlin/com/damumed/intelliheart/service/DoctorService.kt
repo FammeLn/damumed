@@ -1,11 +1,14 @@
 package com.damumed.intelliheart.service
 
 import com.damumed.intelliheart.dto.DoctorDto
+import com.damumed.intelliheart.dto.CreateDoctorRequestDto
 import com.damumed.intelliheart.entity.Doctor
 import com.damumed.intelliheart.exception.DoctorNotFoundException
 import com.damumed.intelliheart.repository.DoctorRepository
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.server.ResponseStatusException
 
 /**
  * Сервис для работы с врачами
@@ -16,6 +19,32 @@ import org.springframework.transaction.annotation.Transactional
 class DoctorService(
     private val doctorRepository: DoctorRepository
 ) {
+    fun createDoctor(request: CreateDoctorRequestDto): DoctorDto {
+        if (doctorRepository.existsByLicenseNumber(request.licenseNumber)) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Дәрігердің лицензия нөмірі қайталанады")
+        }
+
+        if (doctorRepository.existsByEmail(request.email)) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Бұл email бойынша дәрігер тіркелген")
+        }
+
+        val doctor = Doctor(
+            fullName = request.fullName,
+            specialization = request.specialization,
+            qualification = request.qualification,
+            experienceYears = request.experienceYears,
+            licenseNumber = request.licenseNumber,
+            phoneNumber = request.phoneNumber,
+            email = request.email,
+            workplace = request.workplace,
+            rating = 0.0,
+            ratingCount = 0,
+            isActive = true
+        )
+
+        return mapToDoctorDto(doctorRepository.save(doctor))
+    }
+
 
     /**
      * Получить список всех активных врачей

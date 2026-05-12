@@ -104,6 +104,7 @@ Frontend запускается отдельно в Android Studio.
 
 ### Врачи
 ```
+POST   /api/doctors
 GET    /api/doctors
 GET    /api/doctors/{id}
 GET    /api/doctors/specialization/{specialization}
@@ -123,6 +124,23 @@ GET    /api/appointments/patient/{patientId}/active
 POST   /api/assistant/query
 ```
 
+Пример создания врача:
+
+```bash
+curl -X POST http://localhost:8080/api/doctors \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullName":"Айдын Серікұлы",
+    "specialization":"Кардиолог",
+    "qualification":"Жоғары санат",
+    "experienceYears":12,
+    "licenseNumber":"KZ-CRD-001",
+    "phoneNumber":"+77010000000",
+    "email":"aidyn.cardiolog@clinic.kz",
+    "workplace":"Damumed Clinic"
+  }'
+```
+
 Пример:
 
 ```bash
@@ -138,6 +156,19 @@ curl -X POST http://localhost:8080/api/assistant/query \
 - `vectorizer.pkl`
 
 Сервис читает их при старте и использует для классификации интентов.
+
+## Swagger / OpenAPI (Backend)
+
+После запуска backend:
+
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+
+## Голосовой помощник на эмуляторах (в т.ч. BlueStacks)
+
+- Приложение запрашивает runtime-доступ к микрофону (`RECORD_AUDIO`) при первом нажатии.
+- На устройстве/эмуляторе должен быть доступен системный speech-recognition сервис.
+- Если распознавание недоступно на BlueStacks, установите/обновите Google app и Google Speech Services.
 
 ## Тесты
 

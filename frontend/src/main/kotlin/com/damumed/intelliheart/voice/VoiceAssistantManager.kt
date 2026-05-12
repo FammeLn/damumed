@@ -1,8 +1,9 @@
 package com.damumed.intelliheart.voice
 
+import android.os.Bundle
 import android.content.Context
-import android.content.Intent
 import android.speech.RecognizerIntent
+import android.speech.RecognitionListener
 import android.speech.SpeechRecognizer
 import java.util.Locale
 
@@ -11,6 +12,14 @@ import java.util.Locale
  * Использует встроенный в Android SpeechRecognizer для распознавания речи
  */
 class VoiceAssistantManager(private val context: Context) {
+    private val appContext = context.applicationContext
+    private val speechRecognizer: SpeechRecognizer? = if (SpeechRecognizer.isRecognitionAvailable(appContext)) {
+        SpeechRecognizer.createSpeechRecognizer(appContext).also { recognizer ->
+            recognizer.setRecognitionListener(createRecognitionListener())
+        }
+    } else {
+        null
+    }
 
     // Флаг, слушаем ли мы голос в данный момент
     private var isListening = false
@@ -38,16 +47,14 @@ class VoiceAssistantManager(private val context: Context) {
      * Поддерживает казахский и русский языки
      */
     fun startListening() {
-        // Проверяем, доступен ли SpeechRecognizer на устройстве
-        if (!SpeechRecognizer.isRecognitionAvailable(context)) {
-            onErrorCallback?.invoke("Сипатау бөлімі қосымша құрамаса болмайды")
+        if (speechRecognizer == null) {
+            onErrorCallback?.invoke("Бұл құрылғыда дауыс тану қызметі қолжетімсіз")
             return
         }
-
-        isListening = true
+        if (isListening) return
 
         // Создаем Intent для SpeechRecognizer
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        val intent = android.content.Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             // Указываем, что используем стандартный язык модель
             putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -58,37 +65,25 @@ class VoiceAssistantManager(private val context: Context) {
             // Также поддерживается русский (ru_RU)
             putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE,
-                "kk_KZ" // Казахский
+                "kk-KZ" // Казахский
             )
 
             // Устанавливаем дополнительные языки
             putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE,
-                "kk_KZ,ru_RU" // Казахский и русский
+                "kk-KZ" // Приоритет казахского
             )
+            putExtra(RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES, arrayListOf("kk-KZ", "ru-RU"))
 
-            // Включаем режим мультиязычного распознавания
-            putExtra(
-                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH
-            )
-
-            // Максимальное количество результатов
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-
-            // Добавляем подсказку для пользователя
-            putExtra(
-                RecognizerIntent.EXTRA_PROMPT,
-                "Ваше заболевание опишите речью..."
-            )
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Сұрағыңызды айтыңыз...")
         }
 
-        // Запускаем распознавание речи (в реальном приложении нужна интеграция с RecognitionListener)
-        // Здесь для простоты используем встроенный диалог системы
         try {
-            context.startActivity(intent)
+            isListening = true
+            speechRecognizer.startListening(intent)
         } catch (e: Exception) {
-            onErrorCallback?.invoke("Сипатау өндіріңіз: ${e.message}")
+            onErrorCallback?.invoke("Дауыс тануды іске қосу сәтсіз: ${e.message}")
             isListening = false
         }
     }
@@ -97,6 +92,14 @@ class VoiceAssistantManager(private val context: Context) {
      * Остановить слушать голос
      */
     fun stopListening() {
+        if (isListening) {
+            speechRecognizer?.stopListening()
+        }
+        isListening = false
+    }
+
+    fun destroy() {
+        speechRecognizer?.destroy()
         isListening = false
     }
 
@@ -109,22 +112,49 @@ class VoiceAssistantManager(private val context: Context) {
      * Обработать результаты распознавания
      * Вызывается когда SpeechRecognizer вернул результаты
      */
-    fun processRecognitionResults(results: ArrayList<String>) {
-        if (results.isNotEmpty()) {
-            // Берем первый (наиболее точный) результат
-            val recognizedText = results[0]
-            onResultCallback?.invoke(recognizedText)
-        } else {
-            onErrorCallback?.invoke("Дыбысты таныту сәтсіз болды. Қайта іс-әрекет жасаңыз")
+    private fun processRecognitionResults(results: ArrayList<String>?) {
+        val recognizedText = results?.firstOrNull()
+        if (recognizedText.isNullOrBlank()) {
+            onErrorCallback?.invoke("Дыбысты тану сәтсіз болды. Қайталап көріңіз")
+            return
         }
-        isListening = false
+        onResultCallback?.invoke(recognizedText)
     }
 
-    /**
-     * Обработать ошибку распознавания
-     */
-    fun processRecognitionError(error: String) {
-        onErrorCallback?.invoke("Қате: $error")
-        isListening = false
+    private fun createRecognitionListener(): RecognitionListener {
+        return object : RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle?) = Unit
+            override fun onBeginningOfSpeech() = Unit
+            override fun onRmsChanged(rmsdB: Float) = Unit
+            override fun onBufferReceived(buffer: ByteArray?) = Unit
+            override fun onEndOfSpeech() = Unit
+            override fun onPartialResults(partialResults: Bundle?) = Unit
+            override fun onEvent(eventType: Int, params: Bundle?) = Unit
+
+            override fun onResults(results: Bundle?) {
+                val spoken = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                processRecognitionResults(spoken)
+                isListening = false
+            }
+
+            override fun onError(error: Int) {
+                onErrorCallback?.invoke(mapError(error))
+                isListening = false
+            }
+        }
+    }
+
+    private fun mapError(error: Int): String {
+        return when (error) {
+            SpeechRecognizer.ERROR_AUDIO -> "Микрофоннан аудио оқу сәтсіз болды"
+            SpeechRecognizer.ERROR_CLIENT -> "Клиенттік қате. Қайта байқап көріңіз"
+            SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Микрофонға рұқсат беріңіз"
+            SpeechRecognizer.ERROR_NETWORK, SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Желі қателігі. Интернетті тексеріңіз"
+            SpeechRecognizer.ERROR_NO_MATCH -> "Сөз танылмады. Қайта айтып көріңіз"
+            SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Дауыс тану қазір бос емес"
+            SpeechRecognizer.ERROR_SERVER -> "Дауыс тану сервері жауап бермеді"
+            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Сөйлеу уақыты бітті"
+            else -> "Дауыс тануда белгісіз қате пайда болды"
+        }
     }
 }
