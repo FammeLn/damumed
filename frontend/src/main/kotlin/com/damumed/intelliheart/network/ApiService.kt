@@ -5,6 +5,9 @@ import com.damumed.intelliheart.network.dto.AssistantRequest
 import com.damumed.intelliheart.network.dto.AssistantResponse
 import com.damumed.intelliheart.network.dto.CreateAppointmentRequest
 import com.damumed.intelliheart.network.dto.DoctorResponse
+import com.damumed.intelliheart.network.dto.TelegramAuthStartRequest
+import com.damumed.intelliheart.network.dto.TelegramAuthStartResponse
+import com.damumed.intelliheart.network.dto.TelegramAuthStatusResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -76,4 +79,14 @@ interface ApiService {
     suspend fun queryAssistant(
         @Body request: AssistantRequest
     ): AssistantResponse
+
+    @POST("/api/auth/telegram/start")
+    suspend fun startTelegramAuth(
+        @Body request: TelegramAuthStartRequest
+    ): TelegramAuthStartResponse
+
+    @GET("/api/auth/telegram/status/{authRequestId}")
+    suspend fun getTelegramAuthStatus(
+        @Path("authRequestId") authRequestId: String
+    ): TelegramAuthStatusResponse
 }

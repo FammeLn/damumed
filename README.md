@@ -1,128 +1,198 @@
-# DAMUMED / IntelliHeart — медицинский голосовой помощник
+# DAMUMED / IntelliHeart
 
-Интеллектуальное мобильное приложение для пациентов и клиник: запись к врачу, медкарта, напоминания и голосовые запросы на казахском и русском языках. Проект состоит из трёх частей: **Backend (Spring Boot)**, **ML microservice (FastAPI)** и **Android Frontend (Jetpack Compose)**.
+Единый проект медицинского мобильного сервиса в стиле DAMUMED с голосовым помощником, записью к врачу, медкартой и интеграцией AI-интентов.
 
-## Состав и связь сервисов
+> Этот README — полное описание текущего состояния проекта, архитектуры, API, запуска и соответствия ТЗ.
 
-| Компонент | Технологии | Порт | Куда ходит |
+## 1. О проекте
+
+**Цель продукта:** дать пациенту быстрый доступ к медицинским сервисам через привычный UI и голосовое взаимодействие.
+
+**Ключевые сценарии из ТЗ:**
+- запись к врачу;
+- вызов врача на дом;
+- просмотр медицинской карты;
+- голосовые запросы на русском/казахском;
+- навигация по приложению через AI-помощника.
+
+## 2. Текущее состояние реализации
+
+Проект находится в стадии **MVP**.
+
+### Реализовано сейчас
+- Android-приложение (Jetpack Compose);
+- Backend API (Spring Boot, Kotlin, JPA);
+- ML microservice (FastAPI + модель интентов);
+- голосовой сценарий с `SpeechRecognizer` + backend AI routing;
+- Swagger/OpenAPI для backend;
+- базовые unit-тесты backend.
+
+### В планах (по ТЗ, частично/не реализовано)
+- iOS-клиент;
+- полноценная авторизация (OTP/биометрия/семейный профиль);
+- расширенные напоминания и push-центр;
+- чат/поддержка, карта клиник, анализы с PDF;
+- глубокая интеграция с МИС/лабораториями/платежами.
+
+## 3. Архитектура
+
+Проект состоит из 3 сервисов:
+
+| Компонент | Технологии | Порт | Назначение |
 | --- | --- | --- | --- |
-| Backend | Spring Boot, Kotlin, JPA | `8080` | В ML service (`/predict`) |
-| ML service | FastAPI, scikit-learn | `8000` | — |
-| Frontend | Android, Kotlin, Compose | — | В Backend (`/api/*`) |
+| `frontend/` | Android, Kotlin, Jetpack Compose | — | UI, voice input, вызовы backend API |
+| `backend/` | Spring Boot 3, Kotlin, JPA, H2 | `8080` | бизнес-логика, API, интеграция с ML |
+| `ml_service/` | FastAPI, scikit-learn, joblib | `8000` | определение интента и action по тексту |
 
-## Требования
+Поток обработки голоса:
 
-**Backend**
-- JDK 21
-- Gradle Wrapper (в репозитории)
+1. Пользователь нажимает кнопку микрофона в Android.
+2. `SpeechRecognizer` возвращает распознанный текст.
+3. Frontend отправляет текст в `POST /api/assistant/query`.
+4. Backend обращается в ML `/predict`.
+5. Backend возвращает `text + action`.
+6. Frontend озвучивает/показывает ответ и делает навигацию.
 
-**ML service**
+## 4. Структура репозитория
+
+```text
+damumed-alt-alt/
+├── backend/           # Spring Boot API
+├── frontend/          # Android приложение
+├── ml_service/        # FastAPI AI-service
+├── start-all.sh       # единый запуск ml_service + backend
+├── build-backend.sh   # вспомогательный backend скрипт
+└── README.md
+```
+
+## 5. Технологический стек
+
+### Frontend
+- Kotlin
+- Jetpack Compose
+- Retrofit + OkHttp
+- Android SpeechRecognizer
+- Android TextToSpeech
+
+### Backend
+- Kotlin
+- Spring Boot (Web, Data JPA, Validation)
+- H2 (в MVP)
+- RestTemplate/WebClient стек для внешних вызовов
+- springdoc-openapi (Swagger UI)
+
+### ML service
 - Python 3.10+
-- pip
+- FastAPI + Uvicorn
+- scikit-learn + joblib
+- Numpy
 
-**Frontend**
-- Android Studio + Android SDK (platform 34)
-- Эмулятор или физическое устройство
+## 6. Требования к окружению
 
-## Быстрый старт
+- **Java:** JDK 21 (для backend)
+- **Python:** 3.10+
+- **Android:** Android Studio + Android SDK (API 34)
+- **OS:** Linux/macOS/Windows (с поправками на пути SDK/JDK)
 
-### 1) ML service (FastAPI)
+## 7. Быстрый запуск
+
+### 7.1. Рекомендуемый запуск backend + ml_service
+
+```bash
+cd damumed-alt-alt
+bash ./start-all.sh
+```
+
+Скрипт:
+- проверяет Java 21;
+- запускает `ml_service` на `8000`;
+- запускает backend на `8080`;
+- пишет логи в `/tmp/ml_service.log` и `/tmp/backend.log`.
+
+Остановка:
+
+```bash
+kill <ML_PID> <BACKEND_PID>
+```
+
+### 7.2. Если `start-all.sh` ругается на зависимости ML
 
 ```bash
 cd ml_service
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+### 7.3. Ручной запуск по частям
+
+**ML service**
+
+```bash
+cd ml_service
+source .venv/bin/activate
 python main.py
 ```
 
-Проверка:
-
-```bash
-curl http://localhost:8000/health
-```
-
-### 2) Backend (Spring Boot)
-
-По умолчанию сервис ждёт ML по адресу `http://localhost:8000`. Меняется через:
-- `backend/src/main/resources/application.yml` (`ml.service.url`), или
-- переменную окружения `ML_SERVICE_URL`.
+**Backend**
 
 ```bash
 cd backend
 ./gradlew bootRun
 ```
 
-Проверка:
+**Frontend**
 
-```bash
-curl http://localhost:8080/api/doctors
-```
+Открыть `frontend/` в Android Studio и запустить `debug` сборку.
 
-### 3) Frontend (Android)
+## 8. Конфигурация
 
-Откройте проект в Android Studio:
+### Backend -> ML URL
 
-```
-File -> Open -> <repo>/frontend
-```
+По умолчанию backend ожидает ML по `http://localhost:8000`.
 
-или через Gradle:
+- Файл: `backend/src/main/resources/application.yml`
+- Параметр: `ml.service.url`
 
-```bash
-cd frontend
-./gradlew installDebug
-```
+### Telegram авторизация (backend)
 
-Если Android SDK не настроен, создайте `frontend/local.properties` (не коммитится):
+Задаются через переменные окружения:
 
-```
-sdk.dir=/path/to/Android/Sdk
-```
+- `TELEGRAM_BOT_TOKEN` — токен бота (обязательно для работы auth flow)
+- `TELEGRAM_BOT_USERNAME` — username бота (по умолчанию `intelliheart_auth_bot`)
+- `TELEGRAM_AUTH_EXPIRATION_MINUTES` — TTL заявки авторизации (по умолчанию `10`)
+- `TELEGRAM_SESSION_TTL_HOURS` — TTL выданной сессии (по умолчанию `168`)
 
-**Базовый URL Backend** находится в:
+### Frontend -> Backend URL
 
-```
-frontend/src/main/kotlin/com/damumed/intelliheart/network/RetrofitClient.kt
-```
+Файл: `frontend/src/main/kotlin/com/damumed/intelliheart/network/RetrofitClient.kt`
 
-По умолчанию используется `http://10.0.2.2:8080` (Android эмулятор).  
-Для физического устройства укажите IP хоста, например `http://192.168.1.10:8080`,  
-или используйте `adb reverse tcp:8080 tcp:8080`.
+По умолчанию:
+- `http://10.0.2.2:8080/` (Android Emulator).
 
-## Скрипт единого запуска
+Для реального устройства:
+- укажите IP машины, где запущен backend;
+- либо используйте `adb reverse tcp:8080 tcp:8080`.
 
-Скрипт запускает **ML service + Backend** и проверяет их доступность:
+## 9. API документация (Swagger/OpenAPI)
 
-```bash
-./start-all.sh
-```
+После старта backend:
 
-Frontend запускается отдельно в Android Studio.
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-## Основные API эндпоинты
+## 10. Основные API endpoint'ы
 
-### Врачи
-```
-POST   /api/doctors
-GET    /api/doctors
-GET    /api/doctors/{id}
-GET    /api/doctors/specialization/{specialization}
-GET    /api/doctors/sorted
-GET    /api/doctors/search?query=...
-```
+### 10.1 Врачи
 
-### Записи
-```
-POST   /api/appointments/book
-GET    /api/appointments/patient/{patientId}
-GET    /api/appointments/patient/{patientId}/active
-```
-
-### Голосовой помощник
-```
-POST   /api/assistant/query
-```
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| POST | `/api/doctors` | создать врача |
+| GET | `/api/doctors` | список активных врачей |
+| GET | `/api/doctors/{id}` | врач по id |
+| GET | `/api/doctors/specialization/{specialization}` | врачи по специализации |
+| GET | `/api/doctors/sorted` | врачи по рейтингу |
+| GET | `/api/doctors/search?query=...` | поиск по имени |
 
 Пример создания врача:
 
@@ -141,6 +211,22 @@ curl -X POST http://localhost:8080/api/doctors \
   }'
 ```
 
+### 10.2 Записи (appointments)
+
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| POST | `/api/appointments/book` | создать запись |
+| GET | `/api/appointments/patient/{patientId}` | история записей пациента |
+| GET | `/api/appointments/patient/{patientId}/active` | активные записи |
+| GET | `/api/appointments/{appointmentId}` | запись по id |
+| DELETE | `/api/appointments/{appointmentId}` | отмена записи |
+
+### 10.3 Голосовой помощник
+
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| POST | `/api/assistant/query` | обработать голосовой/текстовый запрос |
+
 Пример:
 
 ```bash
@@ -149,35 +235,112 @@ curl -X POST http://localhost:8080/api/assistant/query \
   -d '{"text":"Мне нужно жазылу к врачу"}'
 ```
 
-## Модели ML
+### 10.4 Telegram авторизация по подтверждению номера
 
-Файлы модели находятся в `ml_service/`:
-- `intent_model.pkl`
-- `vectorizer.pkl`
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| POST | `/api/auth/telegram/start` | старт авторизации, возвращает deep-link на бота |
+| GET | `/api/auth/telegram/status/{authRequestId}` | статус подтверждения номера и access token |
+| POST | `/api/telegram/webhook` | webhook для Telegram update payload |
 
-Сервис читает их при старте и использует для классификации интентов.
+Пример старта:
 
-## Swagger / OpenAPI (Backend)
+```bash
+curl -X POST http://localhost:8080/api/auth/telegram/start \
+  -H "Content-Type: application/json" \
+  -d '{"phoneNumber":"+77011234567"}'
+```
 
-После запуска backend:
+Дальше flow:
 
-- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
-- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+1. Приложение получает `botLink`.
+2. Пользователь открывает бота по ссылке.
+3. Бот просит нажать кнопку `Поделиться номером`.
+4. После подтверждения бот валидирует номер и backend помечает auth как `VERIFIED`.
+5. Приложение опрашивает `/status/{authRequestId}` и получает `accessToken`.
 
-## Голосовой помощник на эмуляторах (в т.ч. BlueStacks)
+## 11. ML сервис и интенты
 
-- Приложение запрашивает runtime-доступ к микрофону (`RECORD_AUDIO`) при первом нажатии.
-- На устройстве/эмуляторе должен быть доступен системный speech-recognition сервис.
-- Если распознавание недоступно на BlueStacks, установите/обновите Google app и Google Speech Services.
+ML сервис:
+- загружает `intent_model.pkl` и `vectorizer.pkl`;
+- принимает текст в `/predict`;
+- возвращает действие (`action`) и текст ответа (`text`).
 
-## Тесты
+Ключевые действия:
+- `NAVIGATE_TO_APPOINTMENT`
+- `NAVIGATE_TO_RECORDS`
+- `CALL_DOCTOR`
+- `NAVIGATE_TO_PROFILE`
+- `NONE`
+
+Если ML недоступен, backend использует fallback-логику по ключевым словам.
+
+## 12. Голосовой модуль: важные детали
+
+В Android-приложении реализовано:
+- runtime-запрос разрешения `RECORD_AUDIO`;
+- `SpeechRecognizer` + `RecognitionListener`;
+- обработка ошибок распознавания с понятными сообщениями.
+
+### Ограничения эмуляторов (включая BlueStacks)
+
+Если показывается сообщение, что голосовое распознавание недоступно:
+- в эмуляторе отсутствует/сломана системная speech-служба;
+- проверьте `Google app` и `Speech Services by Google`;
+- проверьте доступ к микрофону в настройках Android;
+- для стабильной проверки лучше использовать Android Emulator (Google APIs) или реальное устройство.
+
+## 13. Соответствие ТЗ (кратко)
+
+ТЗ покрывает значительно более широкий продукт (iOS + Android, семейный аккаунт, OTP, чат, анализы, push-центр, интеграции с МИС и т.д.).
+
+Текущий MVP покрывает ядро:
+- базовый мобильный клиент (Android);
+- запись/вызов/базовые медицинские разделы;
+- голосовой помощник;
+- backend API;
+- отдельный ML сервис интентов.
+
+## 14. Тестирование
+
+### Backend
 
 ```bash
 cd backend
 ./gradlew test
 ```
 
+Покрыты тестами:
+- `AiAssistantService`
+- `AiAssistantController`
+- создание врача (`DoctorService`, `DoctorController`)
+
+### Frontend
+
+```bash
+cd frontend
+./gradlew test
+```
+
+## 15. Безопасность и ограничения MVP
+
+- В MVP используется H2 (in-memory), не production-хранилище.
+- Нет полноценной production-аутентификации/авторизации.
+- Голосовой помощник не ставит диагнозы и не заменяет врача.
+- Для production нужны: TLS, аудит, роли, согласия, маскирование логов, интеграция с медрегуляторными требованиями.
+
+## 16. Roadmap (следующие шаги)
+
+1. Перевод БД на PostgreSQL + миграции.
+2. Полный auth (OTP/JWT/биометрия).
+3. Расширение сценариев NLP и многошаговые диалоги.
+4. Push-уведомления и напоминания.
+5. Интеграции с внешними МИС/лабораториями.
+6. iOS клиент.
+7. Нагрузочные и security тесты.
+
 ---
 
 **Статус:** MVP  
-**Версия:** 1.0.0
+**Версия:** 1.1.0  
+**Языки интерфейса:** Казахский, Русский

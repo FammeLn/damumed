@@ -88,3 +88,28 @@ data class AssistantResponse(
     // Дополнительные данные (например, ID врача для навигации)
     val metadata: Map<String, String> = emptyMap()
 )
+
+data class TelegramAuthStartRequest(
+    val phoneNumber: String
+)
+
+data class TelegramAuthStartResponse(
+    val authRequestId: String,
+    val botLink: String,
+    val expiresAt: Long
+)
+
+data class TelegramAuthPatient(
+    val id: Long,
+    val fullName: String,
+    val phoneNumber: String
+)
+
+data class TelegramAuthStatusResponse(
+    val authRequestId: String,
+    val status: String,
+    val isAuthenticated: Boolean,
+    val accessToken: String? = null,
+    val patient: TelegramAuthPatient? = null,
+    val expiresAt: Long
+)

@@ -24,3 +24,10 @@ logging:
   level:
     root: INFO
     com.damumed.intelliheart: DEBUG
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN:}
+    username: ${TELEGRAM_BOT_USERNAME:intelliheart_auth_bot}
+    auth-expiration-minutes: ${TELEGRAM_AUTH_EXPIRATION_MINUTES:10}
+    session-ttl-hours: ${TELEGRAM_SESSION_TTL_HOURS:168}
