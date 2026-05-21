@@ -149,7 +149,8 @@ class VoiceAssistantManager(private val context: Context) {
             SpeechRecognizer.ERROR_AUDIO -> "Микрофоннан аудио оқу сәтсіз болды"
             SpeechRecognizer.ERROR_CLIENT -> "Клиенттік қате. Қайта байқап көріңіз"
             SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Микрофонға рұқсат беріңіз"
-            SpeechRecognizer.ERROR_NETWORK, SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Желі қателігі. Интернетті тексеріңіз"
+            SpeechRecognizer.ERROR_NETWORK, SpeechRecognizer.ERROR_NETWORK_TIMEOUT ->
+                "Желі қателігі. Интернетті тексеріңіз немесе Google Speech Services пен офлайн тіл пакеттерін орнатыңыз"
             SpeechRecognizer.ERROR_NO_MATCH -> "Сөз танылмады. Қайта айтып көріңіз"
             SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Дауыс тану қазір бос емес"
             SpeechRecognizer.ERROR_SERVER -> "Дауыс тану сервері жауап бермеді"

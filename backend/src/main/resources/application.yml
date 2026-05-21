@@ -4,11 +4,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/intelliheart}
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
 
 server:
   port: 8080
@@ -18,7 +19,7 @@ server:
 # Конфигурация ML микросервиса
 ml:
   service:
-    url: http://localhost:8000
+    url: ${ML_SERVICE_URL:http://localhost:8000}
 
 logging:
   level:
@@ -31,3 +32,6 @@ telegram:
     username: ${TELEGRAM_BOT_USERNAME:intelliheart_auth_bot}
     auth-expiration-minutes: ${TELEGRAM_AUTH_EXPIRATION_MINUTES:10}
     session-ttl-hours: ${TELEGRAM_SESSION_TTL_HOURS:168}
+
+auth:
+  session-ttl-hours: ${AUTH_SESSION_TTL_HOURS:168}

@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,6 +32,14 @@ sealed class Screen(
         icon = Icons.Default.Menu
     )
 
+    object AppointmentBookingScreen : Screen(
+        route = "appointment_booking/{doctorId}",
+        displayName = "Жазылу",
+        icon = Icons.Default.Menu
+    ) {
+        fun createRoute(doctorId: Long): String = "appointment_booking/$doctorId"
+    }
+
     // Экран медицинской карты
     object MedicalRecordScreen : Screen(
         route = "medical_record",
@@ -45,11 +54,31 @@ sealed class Screen(
         icon = Icons.Default.Person
     )
 
+    object NotificationsScreen : Screen(
+        route = "notifications",
+        displayName = "Уведомления",
+        icon = Icons.Default.Notifications
+    )
+
     // Экран вызова врача на дом (без навигации в BottomNav)
     object CallDoctorHomeScreen : Screen(
         route = "call_doctor_home",
         displayName = "Дәрігерді үйге шақыру",
         icon = Icons.Default.LocalHospital
+    )
+
+    // Экран авторизации
+    object LoginScreen : Screen(
+        route = "login",
+        displayName = "Кіру",
+        icon = Icons.Default.Person
+    )
+
+    // Экран регистрации
+    object RegisterScreen : Screen(
+        route = "register",
+        displayName = "Тіркелу",
+        icon = Icons.Default.Person
     )
 
     companion object {
@@ -60,6 +89,7 @@ sealed class Screen(
             HomeScreen,
             AppointmentScreen,
             MedicalRecordScreen,
+            NotificationsScreen,
             ProfileScreen
         )
     }

@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: intelliheart-postgres
+    environment:
+      POSTGRES_DB: intelliheart
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  ml_service:
+    build:
+      context: ./ml_service
+    container_name: intelliheart-ml
+    ports:
+      - "8000:8000"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: intelliheart-backend
+    environment:
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/intelliheart
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      ML_SERVICE_URL: http://ml_service:8000
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - ml_service
+
+volumes:
+  postgres_data:

@@ -1,5 +1,6 @@
 package com.damumed.intelliheart.network.dto
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -112,4 +113,53 @@ data class TelegramAuthStatusResponse(
     val accessToken: String? = null,
     val patient: TelegramAuthPatient? = null,
     val expiresAt: Long
+)
+
+data class EmailAuthRequest(
+    val email: String,
+    val password: String
+)
+
+data class EmailAuthResponse(
+    val userId: Long,
+    val email: String,
+    val accessToken: String,
+    val expiresAt: Long
+)
+
+data class CreateNotificationRequest(
+    val title: String,
+    val message: String,
+    val userId: Long? = null
+)
+
+data class NotificationResponse(
+    val id: Long,
+    val title: String,
+    val message: String,
+    val createdAt: Long,
+    val isRead: Boolean,
+    val userId: Long? = null
+)
+
+data class CreatePatientRequest(
+    val iin: String,
+    val fullName: String,
+    val dateOfBirth: LocalDate,
+    val gender: String,
+    val phoneNumber: String,
+    val address: String,
+    val medicalHistory: String? = null
+)
+
+data class PatientResponse(
+    val id: Long,
+    val iin: String,
+    val fullName: String,
+    val dateOfBirth: LocalDate,
+    val gender: String,
+    val phoneNumber: String,
+    val address: String,
+    val medicalHistory: String? = null,
+    val isActive: Boolean
 )

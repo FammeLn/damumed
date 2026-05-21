@@ -10,13 +10,21 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
 import com.damumed.intelliheart.ui.components.BottomNavigationBar
+import com.damumed.intelliheart.ui.auth.AuthSession
+import com.damumed.intelliheart.ui.auth.AuthState
 import com.damumed.intelliheart.ui.navigation.Screen
 import com.damumed.intelliheart.ui.screens.AppointmentScreen
+import com.damumed.intelliheart.ui.screens.AppointmentBookingScreen
 import com.damumed.intelliheart.ui.screens.CallDoctorHomeScreen
 import com.damumed.intelliheart.ui.screens.HomeScreenMain
+import com.damumed.intelliheart.ui.screens.LoginScreen
 import com.damumed.intelliheart.ui.screens.MedicalRecordScreen
+import com.damumed.intelliheart.ui.screens.NotificationsScreen
 import com.damumed.intelliheart.ui.screens.ProfileScreen
+import com.damumed.intelliheart.ui.screens.RegisterScreen
 
 /**
  * Основной компонент приложения с навигацией
@@ -24,73 +32,54 @@ import com.damumed.intelliheart.ui.screens.ProfileScreen
  */
 @Composable
 fun IntelliHeartApp() {
-    // Создаем контроллер навигации
-    val navController = rememberNavController()
+    val authState = remember { mutableStateOf(AuthState()) }
 
-    // Отслеживаем текущий маршрут для выделения активной вкладки
-    val currentRoute = remember { mutableStateOf(Screen.HomeScreen.route) }
+    if (!authState.value.isAuthenticated) {
+        val navController = rememberNavController()
+        NavHost(
+            navController = navController,
+            startDestination = Screen.LoginScreen.route
+        ) {
+            composable(Screen.LoginScreen.route) {
+                LoginScreen(
+                    onAuthSuccess = { session: AuthSession ->
+                        authState.value = AuthState(
+                            isAuthenticated = true,
+                            session = session
+                        )
+                    },
+                    onNavigateToRegister = {
+                        navController.navigate(Screen.RegisterScreen.route)
+                    }
+                )
+            }
 
-    Scaffold(
-        bottomBar = {
-            // Отображаем нижнюю навигационную панель
-            // Скрываем её на экране вызова врача на дом
-            if (currentRoute.value != Screen.CallDoctorHomeScreen.route) {
-                BottomNavigationBar(
-                    currentRoute = currentRoute.value,
-                    onNavigate = { screen ->
-                        // Обновляем текущий маршрут и переходим на экран
-                        currentRoute.value = screen.route
-                        navController.navigate(screen.route) {
-                            // Избегаем создания множественных копий экранов в back stack
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
-                            // Не разрешаем несколько копий одного экрана
-                            restoreState = true
-                        }
+            composable(Screen.RegisterScreen.route) {
+                RegisterScreen(
+                    onAuthSuccess = { session: AuthSession ->
+                        authState.value = AuthState(
+                            isAuthenticated = true,
+                            session = session
+                        )
+                    },
+                    onNavigateToLogin = {
+                        navController.popBackStack()
                     }
                 )
             }
         }
-    ) { innerPadding ->
-        // Основной контент - NavHost для переключения между экранами
-        Box(modifier = Modifier.padding(innerPadding)) {
-            NavHost(
-                navController = navController,
-                startDestination = Screen.HomeScreen.route
-            ) {
-                // Главный экран
-                composable(Screen.HomeScreen.route) {
-                    HomeScreenMain(
-                        onNavigateToAppointments = {
-                            // Переходим на экран записи к врачу
-                            currentRoute.value = Screen.AppointmentScreen.route
-                            navController.navigate(Screen.AppointmentScreen.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                restoreState = true
-                            }
-                        },
-                        onNavigateToCallDoctor = {
-                            // Переходим на экран вызова врача на дом
-                            currentRoute.value = Screen.CallDoctorHomeScreen.route
-                            navController.navigate(Screen.CallDoctorHomeScreen.route)
-                        },
-                        onNavigateToRecords = {
-                            // Переходим на экран медицинской карты
-                            currentRoute.value = Screen.MedicalRecordScreen.route
-                            navController.navigate(Screen.MedicalRecordScreen.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                restoreState = true
-                            }
-                        },
-                        onNavigateToProfile = {
-                            // Переходим на экран профиля
-                            currentRoute.value = Screen.ProfileScreen.route
-                            navController.navigate(Screen.ProfileScreen.route) {
+    } else {
+        val navController = rememberNavController()
+        val currentRoute = remember { mutableStateOf(Screen.HomeScreen.route) }
+
+        Scaffold(
+            bottomBar = {
+                if (currentRoute.value != Screen.CallDoctorHomeScreen.route) {
+                    BottomNavigationBar(
+                        currentRoute = currentRoute.value,
+                        onNavigate = { screen ->
+                            currentRoute.value = screen.route
+                            navController.navigate(screen.route) {
                                 popUpTo(navController.graph.startDestinationId) {
                                     saveState = true
                                 }
@@ -99,34 +88,110 @@ fun IntelliHeartApp() {
                         }
                     )
                 }
+            }
+        ) { innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.HomeScreen.route
+                ) {
+                    composable(Screen.HomeScreen.route) {
+                        HomeScreenMain(
+                            onNavigateToAppointments = {
+                                currentRoute.value = Screen.AppointmentScreen.route
+                                navController.navigate(Screen.AppointmentScreen.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    restoreState = true
+                                }
+                            },
+                            onNavigateToCallDoctor = {
+                                currentRoute.value = Screen.CallDoctorHomeScreen.route
+                                navController.navigate(Screen.CallDoctorHomeScreen.route)
+                            },
+                            onNavigateToRecords = {
+                                currentRoute.value = Screen.MedicalRecordScreen.route
+                                navController.navigate(Screen.MedicalRecordScreen.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    restoreState = true
+                                }
+                            },
+                            onNavigateToProfile = {
+                                currentRoute.value = Screen.ProfileScreen.route
+                                navController.navigate(Screen.ProfileScreen.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    restoreState = true
+                                }
+                            }
+                        )
+                    }
 
-                // Экран записи к врачу
-                composable(Screen.AppointmentScreen.route) {
-                    AppointmentScreen()
-                }
+                    composable(Screen.AppointmentScreen.route) {
+                        AppointmentScreen(
+                            onBookDoctor = { doctorId ->
+                                navController.navigate(Screen.AppointmentBookingScreen.createRoute(doctorId))
+                            }
+                        )
+                    }
 
-                // Экран медицинской карты
-                composable(Screen.MedicalRecordScreen.route) {
-                    MedicalRecordScreen()
-                }
+                    composable(
+                        route = Screen.AppointmentBookingScreen.route,
+                        arguments = listOf(navArgument("doctorId") { type = NavType.LongType })
+                    ) { backStackEntry ->
+                        val doctorId = backStackEntry.arguments?.getLong("doctorId") ?: 0L
+                        AppointmentBookingScreen(
+                            doctorId = doctorId,
+                            session = authState.value.session,
+                            onPatientCreated = { patientId ->
+                                val currentSession = authState.value.session
+                                if (currentSession != null) {
+                                    authState.value = AuthState(
+                                        isAuthenticated = true,
+                                        session = currentSession.copy(patientId = patientId)
+                                    )
+                                }
+                            },
+                            onBookingSuccess = {
+                                navController.popBackStack()
+                            },
+                            onBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
 
-                // Экран профиля
-                composable(Screen.ProfileScreen.route) {
-                    ProfileScreen()
-                }
+                    composable(Screen.MedicalRecordScreen.route) {
+                        MedicalRecordScreen()
+                    }
 
-                // Экран вызова врача на дом
-                composable(Screen.CallDoctorHomeScreen.route) {
-                    CallDoctorHomeScreen(
-                        onSuccess = {
-                            // Возвращаемся на главный экран после успешной отправки
-                            currentRoute.value = Screen.HomeScreen.route
-                            navController.popBackStack()
-                        }
-                    )
+                    composable(Screen.NotificationsScreen.route) {
+                        NotificationsScreen(session = authState.value.session)
+                    }
+
+                    composable(Screen.ProfileScreen.route) {
+                        ProfileScreen(
+                            session = authState.value.session,
+                            onLogout = {
+                                authState.value = AuthState()
+                            }
+                        )
+                    }
+
+                    composable(Screen.CallDoctorHomeScreen.route) {
+                        CallDoctorHomeScreen(
+                            onSuccess = {
+                                currentRoute.value = Screen.HomeScreen.route
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                 }
             }
         }
     }
 }
-

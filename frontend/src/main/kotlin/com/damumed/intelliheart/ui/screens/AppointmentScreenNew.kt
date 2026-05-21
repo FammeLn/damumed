@@ -32,7 +32,10 @@ import com.damumed.intelliheart.viewmodel.DoctorsViewModel
  * Отображает список врачей в виде красивых карточек с информацией и кнопкой записи
  */
 @Composable
-fun AppointmentScreen(modifier: Modifier = Modifier) {
+fun AppointmentScreen(
+    modifier: Modifier = Modifier,
+    onBookDoctor: (Long) -> Unit = {}
+) {
     // Получаем ViewModel для управления состоянием списка врачей
     val viewModel: DoctorsViewModel = viewModel()
     val uiState = remember { viewModel.uiState }
@@ -75,7 +78,10 @@ fun AppointmentScreen(modifier: Modifier = Modifier) {
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(state.doctors) { doctor ->
-                        DoctorCard(doctor = doctor)
+                        DoctorCard(
+                            doctor = doctor,
+                            onBook = { onBookDoctor(doctor.id) }
+                        )
                     }
                 }
             }
@@ -118,7 +124,10 @@ fun AppointmentScreen(modifier: Modifier = Modifier) {
  * Показывает информацию о враче и кнопку для записи к нему
  */
 @Composable
-private fun DoctorCard(doctor: DoctorResponse) {
+private fun DoctorCard(
+    doctor: DoctorResponse,
+    onBook: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -195,7 +204,7 @@ private fun DoctorCard(doctor: DoctorResponse) {
 
             // Кнопка для записи к врачу
             Button(
-                onClick = { /* TODO: Реализовать переход на экран выбора даты и времени */ },
+                onClick = onBook,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)

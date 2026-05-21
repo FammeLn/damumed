@@ -24,6 +24,7 @@
 - Backend API (Spring Boot, Kotlin, JPA);
 - ML microservice (FastAPI + модель интентов);
 - голосовой сценарий с `SpeechRecognizer` + backend AI routing;
+- уведомления внутри приложения + локальные системные уведомления;
 - Swagger/OpenAPI для backend;
 - базовые unit-тесты backend.
 
@@ -41,7 +42,7 @@
 | Компонент | Технологии | Порт | Назначение |
 | --- | --- | --- | --- |
 | `frontend/` | Android, Kotlin, Jetpack Compose | — | UI, voice input, вызовы backend API |
-| `backend/` | Spring Boot 3, Kotlin, JPA, H2 | `8080` | бизнес-логика, API, интеграция с ML |
+| `backend/` | Spring Boot 3, Kotlin, JPA, PostgreSQL | `8080` | бизнес-логика, API, интеграция с ML |
 | `ml_service/` | FastAPI, scikit-learn, joblib | `8000` | определение интента и action по тексту |
 
 Поток обработки голоса:
@@ -77,7 +78,7 @@ damumed-alt-alt/
 ### Backend
 - Kotlin
 - Spring Boot (Web, Data JPA, Validation)
-- H2 (в MVP)
+- PostgreSQL (по умолчанию)
 - RestTemplate/WebClient стек для внешних вызовов
 - springdoc-openapi (Swagger UI)
 
@@ -95,6 +96,18 @@ damumed-alt-alt/
 - **OS:** Linux/macOS/Windows (с поправками на пути SDK/JDK)
 
 ## 7. Быстрый запуск
+
+### 7.0 Docker (PostgreSQL + backend + ml_service)
+
+```bash
+docker compose up --build
+```
+
+После старта:
+- backend: `http://localhost:8080`
+- ml_service: `http://localhost:8000`
+
+Frontend запускается отдельно в Android Studio (см. ниже).
 
 ### 7.1. Рекомендуемый запуск backend + ml_service
 
@@ -153,6 +166,15 @@ cd backend
 
 - Файл: `backend/src/main/resources/application.yml`
 - Параметр: `ml.service.url`
+- Переменная окружения: `ML_SERVICE_URL`
+
+### PostgreSQL (backend)
+
+Backend теперь работает с PostgreSQL по умолчанию.
+
+- `POSTGRES_URL` — JDBC URL, по умолчанию `jdbc:postgresql://localhost:5432/intelliheart`
+- `POSTGRES_USER` — пользователь БД (по умолчанию `postgres`)
+- `POSTGRES_PASSWORD` — пароль БД (по умолчанию `postgres`)
 
 ### Telegram авторизация (backend)
 
@@ -211,6 +233,8 @@ curl -X POST http://localhost:8080/api/doctors \
   }'
 ```
 
+Примечание: при первом старте, если таблица врачей пустая, backend добавляет одного демо-врача.
+
 ### 10.2 Записи (appointments)
 
 | Метод | Endpoint | Назначение |
@@ -258,6 +282,51 @@ curl -X POST http://localhost:8080/api/auth/telegram/start \
 3. Бот просит нажать кнопку `Поделиться номером`.
 4. После подтверждения бот валидирует номер и backend помечает auth как `VERIFIED`.
 5. Приложение опрашивает `/status/{authRequestId}` и получает `accessToken`.
+
+### 10.5 Email + пароль (простая авторизация)
+
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| POST | `/api/auth/register` | регистрация по email/паролю |
+| POST | `/api/auth/login` | вход по email/паролю |
+
+Пример регистрации:
+
+```bash
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","password":"secret"}'
+```
+
+### 10.6 Пациенты
+
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| POST | `/api/patients` | создать профиль пациента |
+| GET | `/api/patients/{id}` | получить пациента по id |
+
+Пример создания пациента:
+
+```bash
+curl -X POST http://localhost:8080/api/patients \
+  -H "Content-Type: application/json" \
+  -d '{"iin":"990612345678","fullName":"Марат Сәлімов","dateOfBirth":"1999-06-12","gender":"Ер","phoneNumber":"+77009998877","address":"Алматы, Бостандыкский р-н","medicalHistory":"—"}'
+```
+
+### 10.7 Уведомления
+
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| GET | `/api/notifications?userId=...` | список уведомлений пользователя |
+| POST | `/api/notifications` | создать уведомление |
+
+Пример создания уведомления:
+
+```bash
+curl -X POST http://localhost:8080/api/notifications \
+  -H "Content-Type: application/json" \
+  -d '{"title":"IntelliHeart","message":"Тесттік хабарлама","userId":1}'
+```
 
 ## 11. ML сервис и интенты
 
@@ -324,7 +393,7 @@ cd frontend
 
 ## 15. Безопасность и ограничения MVP
 
-- В MVP используется H2 (in-memory), не production-хранилище.
+- Используется PostgreSQL без production-настроек и hardening.
 - Нет полноценной production-аутентификации/авторизации.
 - Голосовой помощник не ставит диагнозы и не заменяет врача.
 - Для production нужны: TLS, аудит, роли, согласия, маскирование логов, интеграция с медрегуляторными требованиями.

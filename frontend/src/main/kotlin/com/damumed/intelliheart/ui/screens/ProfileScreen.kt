@@ -12,13 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.damumed.intelliheart.ui.auth.AuthSession
 
 /**
  * Экран профиля пользователя
- * Отображает информацию о пациенте и предоставляет опции выхода
+ * Отображает информацию о пользователе и предоставляет опции выхода
  */
 @Composable
-fun ProfileScreen(onLogout: () -> Unit = {}) {
+fun ProfileScreen(
+    session: AuthSession?,
+    onLogout: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,7 +74,7 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
 
                 // Информация о пациенте
                 Text(
-                    text = "Марат Сәлімов",
+                    text = session?.email ?: "Қонақ",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -84,28 +88,19 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
                     thickness = 1.dp
                 )
 
-                // Поле: ИИН
                 ProfileInfoField(
-                    label = "ИИН:",
-                    value = "990612345678"
+                    label = "Email:",
+                    value = session?.email ?: "—"
                 )
 
-                // Поле: Телефон
                 ProfileInfoField(
-                    label = "Телефон:",
-                    value = "+7 (700) 999-88-77"
+                    label = "ID:",
+                    value = session?.userId?.toString() ?: "—"
                 )
 
-                // Поле: Дата рождения
                 ProfileInfoField(
-                    label = "Туған күні:",
-                    value = "12.06.1999"
-                )
-
-                // Поле: Жынысы
-                ProfileInfoField(
-                    label = "Жынысы:",
-                    value = "Ер"
+                    label = "Patient ID:",
+                    value = session?.patientId?.toString() ?: "—"
                 )
             }
         }

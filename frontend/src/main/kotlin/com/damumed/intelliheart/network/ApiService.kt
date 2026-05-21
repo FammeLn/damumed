@@ -3,8 +3,14 @@ package com.damumed.intelliheart.network
 import com.damumed.intelliheart.network.dto.AppointmentResponse
 import com.damumed.intelliheart.network.dto.AssistantRequest
 import com.damumed.intelliheart.network.dto.AssistantResponse
+import com.damumed.intelliheart.network.dto.CreateNotificationRequest
 import com.damumed.intelliheart.network.dto.CreateAppointmentRequest
+import com.damumed.intelliheart.network.dto.CreatePatientRequest
 import com.damumed.intelliheart.network.dto.DoctorResponse
+import com.damumed.intelliheart.network.dto.EmailAuthRequest
+import com.damumed.intelliheart.network.dto.EmailAuthResponse
+import com.damumed.intelliheart.network.dto.NotificationResponse
+import com.damumed.intelliheart.network.dto.PatientResponse
 import com.damumed.intelliheart.network.dto.TelegramAuthStartRequest
 import com.damumed.intelliheart.network.dto.TelegramAuthStartResponse
 import com.damumed.intelliheart.network.dto.TelegramAuthStatusResponse
@@ -12,6 +18,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  * REST API сервис для работы с бэкендом приложения
@@ -89,4 +96,34 @@ interface ApiService {
     suspend fun getTelegramAuthStatus(
         @Path("authRequestId") authRequestId: String
     ): TelegramAuthStatusResponse
+
+    @POST("/api/auth/register")
+    suspend fun registerWithEmail(
+        @Body request: EmailAuthRequest
+    ): EmailAuthResponse
+
+    @POST("/api/auth/login")
+    suspend fun loginWithEmail(
+        @Body request: EmailAuthRequest
+    ): EmailAuthResponse
+
+    @GET("/api/notifications")
+    suspend fun getNotifications(
+        @Query("userId") userId: Long? = null
+    ): List<NotificationResponse>
+
+    @POST("/api/notifications")
+    suspend fun createNotification(
+        @Body request: CreateNotificationRequest
+    ): NotificationResponse
+
+    @POST("/api/patients")
+    suspend fun createPatient(
+        @Body request: CreatePatientRequest
+    ): PatientResponse
+
+    @GET("/api/patients/{id}")
+    suspend fun getPatient(
+        @Path("id") patientId: Long
+    ): PatientResponse
 }
