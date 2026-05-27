@@ -29,7 +29,11 @@ class PatientService(
             throw ResponseStatusException(HttpStatus.CONFLICT, "Бұл ИИН бойынша пациент бар")
         }
 
-        if (patientRepository.existsByPhoneNumber(phoneNumber)) {
+        // Для членов семьи телефон может совпадать, сгенерируем уникальный для БД
+        var finalPhoneNumber = phoneNumber
+        if (request.primaryPatientId != null && patientRepository.existsByPhoneNumber(phoneNumber)) {
+            finalPhoneNumber = phoneNumber + "_" + System.currentTimeMillis()
+        } else if (patientRepository.existsByPhoneNumber(phoneNumber)) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "Бұл телефон бойынша пациент бар")
         }
 
@@ -38,10 +42,12 @@ class PatientService(
             fullName = fullName,
             dateOfBirth = request.dateOfBirth,
             gender = gender,
-            phoneNumber = phoneNumber,
+            phoneNumber = finalPhoneNumber,
             medicalHistory = request.medicalHistory,
             address = address,
-            isActive = true
+            isActive = true,
+            primaryPatientId = request.primaryPatientId,
+            relationType = request.relationType
         )
 
         return mapToDto(patientRepository.save(patient))
@@ -51,6 +57,23 @@ class PatientService(
         val patient = patientRepository.findById(id)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Пациент табылмады") }
         return mapToDto(patient)
+    }
+
+    fun getFamilyMembers(primaryId: Long): List<PatientDto> {
+        val members = patientRepository.findByPrimaryPatientId(primaryId)
+        return members.map { mapToDto(it) }
+    }
+
+    fun createFamilyMember(primaryId: Long, request: CreatePatientRequestDto): PatientDto {
+        if (!patientRepository.existsById(primaryId)) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Негізгі пациент табылмады")
+        }
+
+        val familyRequest = request.copy(
+            primaryPatientId = primaryId
+        )
+
+        return createPatient(familyRequest)
     }
 
     private fun mapToDto(patient: Patient): PatientDto {
@@ -66,7 +89,9 @@ class PatientService(
             phoneNumber = patient.phoneNumber,
             address = patient.address,
             medicalHistory = patient.medicalHistory,
-            isActive = patient.isActive
+            isActive = patient.isActive,
+            primaryPatientId = patient.primaryPatientId,
+            relationType = patient.relationType
         )
     }
 }

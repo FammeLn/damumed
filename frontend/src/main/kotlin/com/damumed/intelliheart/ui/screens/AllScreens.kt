@@ -9,18 +9,34 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilePresent
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.damumed.intelliheart.ui.auth.AuthSession
+import com.damumed.intelliheart.viewmodel.MedicalRecordViewModel
 
 /**
  * Экран медицинской карты (Медкарта)
  * Отображает историю болезни и результаты прошлых приемов
  */
 @Composable
-fun MedicalRecordScreen(modifier: Modifier = Modifier) {
+fun MedicalRecordScreen(
+    session: AuthSession?,
+    modifier: Modifier = Modifier,
+    onNavigateToAnalyses: () -> Unit = {},
+    onNavigateToReminders: () -> Unit = {}
+) {
+    val viewModel: MedicalRecordViewModel = viewModel()
+    val state by viewModel.state
+
+    LaunchedEffect(session?.patientId) {
+        session?.patientId?.let { viewModel.loadRecords(it) }
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -37,7 +53,6 @@ fun MedicalRecordScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(top = 8.dp)
         )
 
-        // Последние осмотры
         Text(
             text = "Соңғы тексерулер",
             style = MaterialTheme.typography.titleMedium,
@@ -46,59 +61,58 @@ fun MedicalRecordScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(top = 8.dp)
         )
 
-        // Запись 1
-        MedicalRecordCard(
-            date = "2026-04-20",
-            doctor = "Аяулы Ерлан",
-            specialization = "Кардиолог",
-            diagnosis = "Артериялық гипертензия (1 сатысы)",
-            notes = "Қабылдау: күніне 2 рет."
-        )
+        when {
+            state.isLoading -> {
+                CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+            }
+            state.error != null -> {
+                Text(
+                    text = state.error ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+            state.records.isEmpty() -> {
+                Text(
+                    text = "Медкартаның жазбалары жоқ",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+            else -> {
+                state.records.forEach { record ->
+                    MedicalRecordCard(
+                        date = record.visitDate.toString(),
+                        doctor = record.doctorName,
+                        specialization = record.specialization,
+                        diagnosis = record.diagnosis ?: "—",
+                        notes = record.notes ?: "—"
+                    )
+                }
+            }
+        }
 
-        // Запись 2
-        MedicalRecordCard(
-            date = "2026-03-15",
-            doctor = "Нурай Қасымова",
-            specialization = "Невролог",
-            diagnosis = "Мигрень",
-            notes = "Функционалды МРТ жасалды. Патология табылмады."
-        )
-
-        // Запись 3
-        MedicalRecordCard(
-            date = "2026-02-10",
-            doctor = "Аяулы Ерлан",
-            specialization = "Кардиолог",
-            diagnosis = "Профилактикалық қабылдау",
-            notes = "ЭКГ нормада. Келесі қабылдау 6 айдан кейін."
-        )
-
-        // Анализы
         Text(
-            text = "Соңғы талдаулар",
+            text = "Анализдер және еске салулар",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 16.dp)
         )
 
-        AnalysisCard(
-            name = "Жалпы қан талдауы",
-            date = "2026-04-18",
-            status = "Норма ✓"
-        )
+        FilledTonalButton(
+            onClick = onNavigateToAnalyses,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Анализдер нәтижелері")
+        }
 
-        AnalysisCard(
-            name = "Биохимиялық талдау",
-            date = "2026-04-18",
-            status = "Норма ✓"
-        )
-
-        AnalysisCard(
-            name = "Несеп қышқылы талдауы",
-            date = "2026-03-15",
-            status = "Норма ✓"
-        )
+        FilledTonalButton(
+            onClick = onNavigateToReminders,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Еске салулар")
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
     }

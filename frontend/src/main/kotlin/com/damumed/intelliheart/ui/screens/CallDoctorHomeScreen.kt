@@ -15,16 +15,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.damumed.intelliheart.ui.auth.AuthSession
+import com.damumed.intelliheart.viewmodel.FamilyViewModel
+import com.damumed.intelliheart.viewmodel.HomeDoctorViewModel
 
 /**
  * Экран вызова врача на дом
  * Позволяет пациенту заполнить форму с описанием симптомов и адресом
  */
 @Composable
-fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
+fun CallDoctorHomeScreen(
+    session: AuthSession? = null,
+    onSuccess: () -> Unit = {}
+) {
     var selectedSymptoms by remember { mutableStateOf(setOf<String>()) }
     var address by remember { mutableStateOf("") }
     var showSuccess by remember { mutableStateOf(false) }
+    var selectedFamilyMember by remember { mutableStateOf<com.damumed.intelliheart.network.dto.PatientResponse?>(null) }
+
+    val familyViewModel: FamilyViewModel = viewModel()
+    val familyState = familyViewModel.state.value
+    val homeDoctorViewModel: HomeDoctorViewModel = viewModel()
+    val homeDoctorState = homeDoctorViewModel.state.value
+
+    LaunchedEffect(session?.patientId) {
+        session?.patientId?.let { familyViewModel.loadFamilyMembers(it) }
+    }
+    val currentPatientId = selectedFamilyMember?.id ?: session?.patientId
+    LaunchedEffect(currentPatientId) {
+        currentPatientId?.let { homeDoctorViewModel.loadRequests(it) }
+    }
 
     // Список доступных симптомов на казахском
     val symptoms = listOf(
@@ -167,18 +188,48 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        if (session?.patientId != null && familyState.familyMembers.isNotEmpty()) {
+            Text(
+                text = "Кім үшін шақырамыз?",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = selectedFamilyMember == null,
+                    onClick = { selectedFamilyMember = null },
+                    label = { Text("Өзім үшін") }
+                )
+                familyState.familyMembers.forEach { member ->
+                    FilterChip(
+                        selected = selectedFamilyMember?.id == member.id,
+                        onClick = { selectedFamilyMember = member },
+                        label = { Text(member.fullName.split(" ").firstOrNull() ?: member.fullName) }
+                    )
+                }
+            }
+        }
+
         // Кнопка отправки
         Button(
             onClick = {
-                if (address.isNotEmpty() && selectedSymptoms.isNotEmpty()) {
-                    showSuccess = true
-                    // Здесь можно добавить отправку на бэкенд
+                if (currentPatientId != null && address.isNotEmpty() && selectedSymptoms.isNotEmpty()) {
+                    homeDoctorViewModel.createRequest(
+                        patientId = currentPatientId,
+                        symptoms = selectedSymptoms.toList(),
+                        address = address
+                    ) {
+                        showSuccess = true
+                    }
                 }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            enabled = address.isNotEmpty() && selectedSymptoms.isNotEmpty(),
+            enabled = currentPatientId != null &&
+                address.isNotEmpty() &&
+                selectedSymptoms.isNotEmpty(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -200,6 +251,61 @@ fun CallDoctorHomeScreen(onSuccess: () -> Unit = {}) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        if (homeDoctorState.error != null) {
+            Text(
+                text = homeDoctorState.error ?: "",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
+        Text(
+            text = "Өтінімдер тарихы",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        when {
+            homeDoctorState.isLoading -> {
+                CircularProgressIndicator()
+            }
+            homeDoctorState.requests.isEmpty() -> {
+                Text(
+                    text = "Өтінімдер жоқ",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            else -> {
+                homeDoctorState.requests.forEach { request ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                text = "Статус: ${request.status}",
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = request.address,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = request.symptoms.joinToString(", "),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // Dialog успеха

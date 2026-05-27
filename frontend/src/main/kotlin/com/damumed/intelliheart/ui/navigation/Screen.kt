@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.LocalHospital
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -58,6 +59,25 @@ sealed class Screen(
         route = "notifications",
         displayName = "Уведомления",
         icon = Icons.Default.Notifications
+    )
+
+    object FamilyMembersScreen : Screen(
+        route = "family_members",
+        displayName = "Отбасы",
+        icon = Icons.Default.Person
+    )
+
+    // Экран анализов
+    object AnalysesScreen : Screen(
+        route = "analyses",
+        displayName = "Анализдер",
+        icon = Icons.Default.Description
+    )
+
+    object RemindersScreen : Screen(
+        route = "reminders",
+        displayName = "Еске салу",
+        icon = Icons.Default.Description
     )
 
     // Экран вызова врача на дом (без навигации в BottomNav)

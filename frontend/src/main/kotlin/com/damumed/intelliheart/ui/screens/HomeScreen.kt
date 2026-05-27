@@ -46,7 +46,8 @@ fun HomeScreenMain(
     onNavigateToAppointments: () -> Unit = {},
     onNavigateToCallDoctor: () -> Unit = {},
     onNavigateToRecords: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {}
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToAnalyses: () -> Unit = {}
 ) {
     // Получаем контекст приложения
     val context = LocalContext.current
@@ -156,6 +157,21 @@ fun HomeScreenMain(
             ) {
                 Text(
                     text = "Медициналық картамды қарау",
+                    modifier = Modifier.padding(vertical = 10.dp),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            // Кнопка для анализов
+            FilledTonalButton(
+                onClick = onNavigateToAnalyses,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp)
+            ) {
+                Text(
+                    text = "Анализ нәтижелерін қарау",
                     modifier = Modifier.padding(vertical = 10.dp),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold

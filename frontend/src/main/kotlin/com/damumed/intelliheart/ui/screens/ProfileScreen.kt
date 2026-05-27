@@ -21,7 +21,8 @@ import com.damumed.intelliheart.ui.auth.AuthSession
 @Composable
 fun ProfileScreen(
     session: AuthSession?,
-    onLogout: () -> Unit = {}
+    onLogout: () -> Unit = {},
+    onNavigateToFamily: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -106,6 +107,23 @@ fun ProfileScreen(
         }
 
         Spacer(modifier = Modifier.weight(1f))
+
+        // Кнопка перехода к семейному профилю
+        FilledTonalButton(
+            onClick = onNavigateToFamily,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = "Менің отбасым",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Кнопка выхода
         Button(

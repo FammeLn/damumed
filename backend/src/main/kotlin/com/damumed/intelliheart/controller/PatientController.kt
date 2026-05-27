@@ -29,4 +29,19 @@ class PatientController(
     ): ResponseEntity<PatientDto> {
         return ResponseEntity.ok(patientService.getPatientById(id))
     }
+
+    @GetMapping("/{id}/family")
+    fun getFamilyMembers(
+        @PathVariable id: Long
+    ): ResponseEntity<List<PatientDto>> {
+        return ResponseEntity.ok(patientService.getFamilyMembers(id))
+    }
+
+    @PostMapping("/{id}/family")
+    fun addFamilyMember(
+        @PathVariable id: Long,
+        @RequestBody request: CreatePatientRequestDto
+    ): ResponseEntity<PatientDto> {
+        return ResponseEntity.ok(patientService.createFamilyMember(id, request))
+    }
 }

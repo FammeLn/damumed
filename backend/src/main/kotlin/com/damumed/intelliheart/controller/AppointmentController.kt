@@ -2,6 +2,8 @@ package com.damumed.intelliheart.controller
 
 import com.damumed.intelliheart.dto.AppointmentResponseDto
 import com.damumed.intelliheart.dto.CreateAppointmentRequestDto
+import com.damumed.intelliheart.dto.RescheduleAppointmentRequestDto
+import com.damumed.intelliheart.dto.AppointmentSlotDto
 import com.damumed.intelliheart.service.AppointmentService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,6 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestParam
+import java.time.LocalDate
 
 /**
  * REST контроллер для работы с записями к врачам
@@ -91,5 +96,31 @@ class AppointmentController(
     ): ResponseEntity<Map<String, String>> {
         appointmentService.cancelAppointment(appointmentId)
         return ResponseEntity.ok(mapOf("message" to "Өтінім сәтті болдырылды"))
+    }
+
+    /**
+     * PUT /api/appointments/{appointmentId}/reschedule
+     * Перенести запись на другое время
+     */
+    @PutMapping("/{appointmentId}/reschedule")
+    fun rescheduleAppointment(
+        @PathVariable appointmentId: Long,
+        @RequestBody request: RescheduleAppointmentRequestDto
+    ): ResponseEntity<Map<String, String>> {
+        appointmentService.rescheduleAppointment(appointmentId, request.newDateTime)
+        return ResponseEntity.ok(mapOf("message" to "Өтінім ауыстырылды"))
+    }
+
+    /**
+     * GET /api/appointments/doctor/{doctorId}/slots?date=YYYY-MM-DD
+     * Получить доступные слоты врача
+     */
+    @GetMapping("/doctor/{doctorId}/slots")
+    fun getDoctorSlots(
+        @PathVariable doctorId: Long,
+        @RequestParam date: String
+    ): ResponseEntity<List<AppointmentSlotDto>> {
+        val localDate = LocalDate.parse(date)
+        return ResponseEntity.ok(appointmentService.getDoctorAvailableSlots(doctorId, localDate))
     }
 }

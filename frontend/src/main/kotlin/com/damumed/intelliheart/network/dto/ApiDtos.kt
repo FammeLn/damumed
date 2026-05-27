@@ -149,7 +149,9 @@ data class CreatePatientRequest(
     val gender: String,
     val phoneNumber: String,
     val address: String,
-    val medicalHistory: String? = null
+    val medicalHistory: String? = null,
+    val primaryPatientId: Long? = null,
+    val relationType: String? = null
 )
 
 data class PatientResponse(
@@ -161,5 +163,83 @@ data class PatientResponse(
     val phoneNumber: String,
     val address: String,
     val medicalHistory: String? = null,
-    val isActive: Boolean
+    val isActive: Boolean,
+    val primaryPatientId: Long? = null,
+    val relationType: String? = null
+)
+
+data class CreateMedicalRecordRequest(
+    val patientId: Long,
+    val doctorName: String,
+    val specialization: String,
+    val visitDate: LocalDate,
+    val diagnosis: String? = null,
+    val notes: String? = null
+)
+
+data class MedicalRecordResponse(
+    val id: Long,
+    val patientId: Long,
+    val doctorName: String,
+    val specialization: String,
+    val visitDate: LocalDate,
+    val diagnosis: String? = null,
+    val notes: String? = null
+)
+
+data class CreateAnalysisRequest(
+    val patientId: Long,
+    val title: String,
+    val date: LocalDate,
+    val clinic: String
+)
+
+data class AnalysisResponse(
+    val id: Long,
+    val patientId: Long,
+    val title: String,
+    val date: LocalDate,
+    val clinic: String,
+    val status: String,
+    val hasPdf: Boolean,
+    val pdfUrl: String? = null
+)
+
+data class CreateReminderRequest(
+    val patientId: Long,
+    val title: String,
+    val scheduledAt: LocalDateTime,
+    val note: String? = null
+)
+
+data class ReminderResponse(
+    val id: Long,
+    val patientId: Long,
+    val title: String,
+    val scheduledAt: LocalDateTime,
+    val note: String? = null,
+    val isDone: Boolean
+)
+
+data class CreateHomeDoctorRequest(
+    val patientId: Long,
+    val symptoms: List<String>,
+    val address: String
+)
+
+data class HomeDoctorResponse(
+    val id: Long,
+    val patientId: Long,
+    val symptoms: List<String>,
+    val address: String,
+    val status: String,
+    val createdAt: Long
+)
+
+data class AppointmentSlotResponse(
+    val time: String
+)
+
+data class RescheduleAppointmentRequest(
+    val newDateTime: LocalDateTime
 )

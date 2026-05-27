@@ -42,4 +42,9 @@ interface PatientRepository : JpaRepository<Patient, Long> {
      * Проверка наличия пациента с данным ИИН
      */
     fun existsByIin(iin: String): Boolean
+
+    /**
+     * Поиск родственников (семейный профиль)
+     */
+    fun findByPrimaryPatientId(primaryPatientId: Long): List<Patient>
 }

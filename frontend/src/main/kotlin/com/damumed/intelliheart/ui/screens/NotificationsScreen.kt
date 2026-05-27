@@ -65,8 +65,9 @@ fun NotificationsScreen(
         pendingNotification = null
     }
 
-    LaunchedEffect(session?.userId) {
-        viewModel.loadNotifications(session?.userId)
+    LaunchedEffect(session?.patientId, session?.userId) {
+        val targetId = session?.patientId ?: session?.userId
+        viewModel.loadNotifications(targetId)
     }
 
     Column(
@@ -86,7 +87,7 @@ fun NotificationsScreen(
         Button(
             onClick = {
                 viewModel.createNotification(
-                    userId = session?.userId,
+                    userId = session?.patientId ?: session?.userId,
                     title = "IntelliHeart",
                     message = "Тесттік хабарлама: сіздің жазбаңыз сәтті сақталды."
                 ) { notification ->

@@ -48,7 +48,8 @@ fun HomeScreenIntegrated(
     onNavigateToAppointments: () -> Unit = {},
     onNavigateToCallDoctor: () -> Unit = {},
     onNavigateToRecords: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {}
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToAnalyses: () -> Unit = {}
 ) {
     // Получаем контекст приложения
     val context = LocalContext.current
@@ -160,13 +161,26 @@ fun HomeScreenIntegrated(
             }
 
             FilledTonalButton(
-                onClick = { /* TODO: Реализовать переход на медкарту */ },
+                onClick = { onNavigateToRecords() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
             ) {
                 Text(
                     text = "Медициналық картамды қарау",
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    fontSize = 14.sp
+                )
+            }
+            
+            FilledTonalButton(
+                onClick = { onNavigateToAnalyses() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
+                Text(
+                    text = "Анализ нәтижелерін қарау",
                     modifier = Modifier.padding(vertical = 8.dp),
                     fontSize = 14.sp
                 )

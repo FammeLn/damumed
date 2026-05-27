@@ -3,6 +3,7 @@ package com.damumed.intelliheart.service
 import com.damumed.intelliheart.dto.AppointmentDoctorDto
 import com.damumed.intelliheart.dto.AppointmentPatientDto
 import com.damumed.intelliheart.dto.AppointmentResponseDto
+import com.damumed.intelliheart.dto.AppointmentSlotDto
 import com.damumed.intelliheart.dto.CreateAppointmentRequestDto
 import com.damumed.intelliheart.entity.Appointment
 import com.damumed.intelliheart.entity.AppointmentStatus
@@ -15,6 +16,8 @@ import com.damumed.intelliheart.repository.PatientRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.time.LocalDate
+import java.time.LocalTime
 
 /**
  * Сервис для работы с записями к врачам
@@ -25,7 +28,8 @@ import java.time.LocalDateTime
 class AppointmentService(
     private val appointmentRepository: AppointmentRepository,
     private val patientRepository: PatientRepository,
-    private val doctorService: DoctorService
+    private val doctorService: DoctorService,
+    private val notificationService: NotificationService
 ) {
 
     /**
@@ -79,6 +83,11 @@ class AppointmentService(
         )
 
         val savedAppointment = appointmentRepository.save(appointment)
+        notificationService.createSystemNotification(
+            title = "Жазылу қабылданды",
+            message = "Сіз ${doctor.fullName} дәрігеріне ${requestDto.appointmentDateTime} уақытына жазылдыңыз.",
+            userId = patient.id
+        )
 
         return mapToAppointmentResponseDto(savedAppointment)
     }
@@ -151,6 +160,12 @@ class AppointmentService(
         appointment.updatedAt = System.currentTimeMillis()
 
         appointmentRepository.save(appointment)
+
+        notificationService.createSystemNotification(
+            title = "Жазылу болдырылмады",
+            message = "Сіздің ${appointment.doctor?.fullName} дәрігеріне жазылуыңыз болдырылмады.",
+            userId = appointment.patient?.id
+        )
     }
 
     /**
@@ -207,6 +222,37 @@ class AppointmentService(
         appointment.updatedAt = System.currentTimeMillis()
 
         appointmentRepository.save(appointment)
+
+        notificationService.createSystemNotification(
+            title = "Жазылу ауыстырылды",
+            message = "Жаңа уақыт: $newDateTime (${appointment.doctor?.fullName}).",
+            userId = appointment.patient?.id
+        )
+    }
+
+    fun getDoctorAvailableSlots(doctorId: Long, date: LocalDate): List<AppointmentSlotDto> {
+        val doctor = doctorService.getDoctorEntityById(doctorId)
+        val startOfDay = date.atTime(9, 0)
+        val endOfDay = date.atTime(17, 0)
+
+        val appointments = appointmentRepository.findByDoctorAndAppointmentDateTimeBetween(
+            doctor,
+            startOfDay,
+            endOfDay
+        ).filter { it.status != AppointmentStatus.CANCELLED }
+
+        val bookedTimes = appointments.mapNotNull { it.appointmentDateTime?.toLocalTime() }.toSet()
+        val slots = mutableListOf<AppointmentSlotDto>()
+
+        var time = LocalTime.of(9, 0)
+        while (time.isBefore(LocalTime.of(17, 0))) {
+            if (!bookedTimes.contains(time)) {
+                slots.add(AppointmentSlotDto(time = time.toString()))
+            }
+            time = time.plusMinutes(30)
+        }
+
+        return slots
     }
 
     /**

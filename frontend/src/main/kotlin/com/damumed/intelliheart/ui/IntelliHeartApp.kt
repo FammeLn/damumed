@@ -25,6 +25,10 @@ import com.damumed.intelliheart.ui.screens.MedicalRecordScreen
 import com.damumed.intelliheart.ui.screens.NotificationsScreen
 import com.damumed.intelliheart.ui.screens.ProfileScreen
 import com.damumed.intelliheart.ui.screens.RegisterScreen
+import com.damumed.intelliheart.ui.screens.FamilyMembersScreen
+import com.damumed.intelliheart.ui.screens.AnalysesScreen
+import com.damumed.intelliheart.ui.screens.RemindersScreen
+import com.damumed.intelliheart.ui.screens.AnalysesScreen
 
 /**
  * Основной компонент приложения с навигацией
@@ -127,6 +131,15 @@ fun IntelliHeartApp() {
                                     }
                                     restoreState = true
                                 }
+                            },
+                            onNavigateToAnalyses = {
+                                currentRoute.value = Screen.AnalysesScreen.route
+                                navController.navigate(Screen.AnalysesScreen.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    restoreState = true
+                                }
                             }
                         )
                     }
@@ -135,7 +148,8 @@ fun IntelliHeartApp() {
                         AppointmentScreen(
                             onBookDoctor = { doctorId ->
                                 navController.navigate(Screen.AppointmentBookingScreen.createRoute(doctorId))
-                            }
+                            },
+                            session = authState.value.session
                         )
                     }
 
@@ -166,24 +180,69 @@ fun IntelliHeartApp() {
                     }
 
                     composable(Screen.MedicalRecordScreen.route) {
-                        MedicalRecordScreen()
+                        MedicalRecordScreen(
+                            session = authState.value.session,
+                            onNavigateToAnalyses = {
+                                navController.navigate(Screen.AnalysesScreen.route)
+                            },
+                            onNavigateToReminders = {
+                                navController.navigate(Screen.RemindersScreen.route)
+                            }
+                        )
                     }
 
                     composable(Screen.NotificationsScreen.route) {
                         NotificationsScreen(session = authState.value.session)
                     }
 
+                    composable(Screen.AnalysesScreen.route) {
+                        AnalysesScreen(
+                            session = authState.value.session,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable(Screen.RemindersScreen.route) {
+                        RemindersScreen(
+                            session = authState.value.session,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+
                     composable(Screen.ProfileScreen.route) {
                         ProfileScreen(
                             session = authState.value.session,
+                            onNavigateToFamily = {
+                                navController.navigate(Screen.FamilyMembersScreen.route)
+                            },
                             onLogout = {
                                 authState.value = AuthState()
                             }
                         )
                     }
 
+                    composable(Screen.FamilyMembersScreen.route) {
+                        FamilyMembersScreen(
+                            session = authState.value.session,
+                            onBack = {
+                                navController.popBackStack()
+                            },
+                            onPrimaryCreated = { patientId ->
+                                val currentSession = authState.value.session
+                                if (currentSession != null) {
+                                    authState.value = AuthState(
+                                        isAuthenticated = true,
+                                        session = currentSession.copy(patientId = patientId)
+                                    )
+                                }
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+
                     composable(Screen.CallDoctorHomeScreen.route) {
                         CallDoctorHomeScreen(
+                            session = authState.value.session,
                             onSuccess = {
                                 currentRoute.value = Screen.HomeScreen.route
                                 navController.popBackStack()

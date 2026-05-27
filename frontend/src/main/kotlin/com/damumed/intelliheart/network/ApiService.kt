@@ -6,19 +6,34 @@ import com.damumed.intelliheart.network.dto.AssistantResponse
 import com.damumed.intelliheart.network.dto.CreateNotificationRequest
 import com.damumed.intelliheart.network.dto.CreateAppointmentRequest
 import com.damumed.intelliheart.network.dto.CreatePatientRequest
+import com.damumed.intelliheart.network.dto.CreateMedicalRecordRequest
+import com.damumed.intelliheart.network.dto.CreateAnalysisRequest
+import com.damumed.intelliheart.network.dto.CreateReminderRequest
+import com.damumed.intelliheart.network.dto.CreateHomeDoctorRequest
 import com.damumed.intelliheart.network.dto.DoctorResponse
 import com.damumed.intelliheart.network.dto.EmailAuthRequest
 import com.damumed.intelliheart.network.dto.EmailAuthResponse
 import com.damumed.intelliheart.network.dto.NotificationResponse
 import com.damumed.intelliheart.network.dto.PatientResponse
+import com.damumed.intelliheart.network.dto.MedicalRecordResponse
+import com.damumed.intelliheart.network.dto.AnalysisResponse
+import com.damumed.intelliheart.network.dto.ReminderResponse
+import com.damumed.intelliheart.network.dto.HomeDoctorResponse
+import com.damumed.intelliheart.network.dto.AppointmentSlotResponse
+import com.damumed.intelliheart.network.dto.RescheduleAppointmentRequest
 import com.damumed.intelliheart.network.dto.TelegramAuthStartRequest
 import com.damumed.intelliheart.network.dto.TelegramAuthStartResponse
 import com.damumed.intelliheart.network.dto.TelegramAuthStatusResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.DELETE
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.PUT
+import okhttp3.MultipartBody
+import retrofit2.http.Multipart
+import retrofit2.http.Part
 
 /**
  * REST API сервис для работы с бэкендом приложения
@@ -78,6 +93,11 @@ interface ApiService {
         @Path("patientId") patientId: Long
     ): List<AppointmentResponse>
 
+    @DELETE("/api/appointments/{appointmentId}")
+    suspend fun cancelAppointment(
+        @Path("appointmentId") appointmentId: Long
+    ): Map<String, String>
+
     /**
      * POST /api/assistant/query
      * Отправить запрос голосовому помощнику и получить умный ответ
@@ -126,4 +146,86 @@ interface ApiService {
     suspend fun getPatient(
         @Path("id") patientId: Long
     ): PatientResponse
+
+    @GET("/api/patients/{id}/family")
+    suspend fun getFamilyMembers(
+        @Path("id") primaryPatientId: Long
+    ): List<PatientResponse>
+
+    @POST("/api/patients/{id}/family")
+    suspend fun addFamilyMember(
+        @Path("id") primaryPatientId: Long,
+        @Body request: CreatePatientRequest
+    ): PatientResponse
+
+    @GET("/api/medical-records/patient/{patientId}")
+    suspend fun getMedicalRecords(
+        @Path("patientId") patientId: Long
+    ): List<MedicalRecordResponse>
+
+    @POST("/api/medical-records")
+    suspend fun createMedicalRecord(
+        @Body request: CreateMedicalRecordRequest
+    ): MedicalRecordResponse
+
+    @GET("/api/analyses/patient/{patientId}")
+    suspend fun getAnalyses(
+        @Path("patientId") patientId: Long
+    ): List<AnalysisResponse>
+
+    @POST("/api/analyses")
+    suspend fun createAnalysis(
+        @Body request: CreateAnalysisRequest
+    ): AnalysisResponse
+
+    @Multipart
+    @POST("/api/analyses/{id}/upload")
+    suspend fun uploadAnalysisPdf(
+        @Path("id") analysisId: Long,
+        @Part file: MultipartBody.Part
+    ): AnalysisResponse
+
+    @GET("/api/appointments/doctor/{doctorId}/slots")
+    suspend fun getDoctorSlots(
+        @Path("doctorId") doctorId: Long,
+        @Query("date") date: String
+    ): List<AppointmentSlotResponse>
+
+    @PUT("/api/appointments/{appointmentId}/reschedule")
+    suspend fun rescheduleAppointment(
+        @Path("appointmentId") appointmentId: Long,
+        @Body request: RescheduleAppointmentRequest
+    ): Map<String, String>
+
+    @POST("/api/reminders")
+    suspend fun createReminder(
+        @Body request: CreateReminderRequest
+    ): ReminderResponse
+
+    @GET("/api/reminders/patient/{patientId}")
+    suspend fun getReminders(
+        @Path("patientId") patientId: Long
+    ): List<ReminderResponse>
+
+    @PUT("/api/reminders/{reminderId}/done")
+    suspend fun markReminderDone(
+        @Path("reminderId") reminderId: Long
+    ): ReminderResponse
+
+    @POST("/api/home-doctor")
+    suspend fun createHomeDoctorRequest(
+        @Body request: CreateHomeDoctorRequest
+    ): HomeDoctorResponse
+
+    @GET("/api/home-doctor/patient/{patientId}")
+    suspend fun getHomeDoctorRequests(
+        @Path("patientId") patientId: Long
+    ): List<HomeDoctorResponse>
+
+    @DELETE("/api/home-doctor/{requestId}")
+    suspend fun cancelHomeDoctorRequest(
+        @Path("requestId") requestId: Long
+    ): Map<String, String>
+
+    // duplicate declarations removed
 }

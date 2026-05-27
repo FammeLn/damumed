@@ -18,7 +18,8 @@ data class AppointmentBookingState(
     val doctor: DoctorResponse? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
+    val availableSlots: List<String> = emptyList()
 )
 
 class AppointmentBookingViewModel : ViewModel() {
@@ -37,6 +38,24 @@ class AppointmentBookingViewModel : ViewModel() {
                 _state.value = _state.value.copy(
                     isLoading = false,
                     errorMessage = e.message ?: "Дәрігер деректерін жүктеу мүмкін болмады"
+                )
+            }
+        }
+    }
+
+    fun loadSlots(doctorId: Long, date: String) {
+        viewModelScope.launch {
+            try {
+                _state.value = _state.value.copy(isLoading = true, errorMessage = null)
+                val slots = apiService.getDoctorSlots(doctorId, date)
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    availableSlots = slots.map { it.time }
+                )
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    errorMessage = e.message ?: "Уақыт слоттарын жүктеу мүмкін болмады"
                 )
             }
         }

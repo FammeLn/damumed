@@ -2,6 +2,7 @@ package com.damumed.intelliheart.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -24,8 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.damumed.intelliheart.network.dto.PatientResponse
 import com.damumed.intelliheart.ui.auth.AuthSession
 import com.damumed.intelliheart.viewmodel.AppointmentBookingViewModel
+import com.damumed.intelliheart.viewmodel.FamilyViewModel
 
 @Composable
 fun AppointmentBookingScreen(
@@ -36,11 +40,17 @@ fun AppointmentBookingScreen(
     onBack: () -> Unit
 ) {
     val viewModel: AppointmentBookingViewModel = viewModel()
+    val familyViewModel: FamilyViewModel = viewModel()
     val state = viewModel.state.value
+    val familyState = familyViewModel.state.value
 
     var date by remember { mutableStateOf("") }
     var time by remember { mutableStateOf("") }
+    var selectedTime by remember { mutableStateOf("") }
     var reason by remember { mutableStateOf("") }
+
+    // Выбранный пациент: null = сам пользователь, иначе член семьи
+    var selectedFamilyMember by remember { mutableStateOf<PatientResponse?>(null) }
 
     var iin by remember { mutableStateOf("") }
     var fullName by remember { mutableStateOf("") }
@@ -51,8 +61,13 @@ fun AppointmentBookingScreen(
     var medicalHistory by remember { mutableStateOf("") }
 
     LaunchedEffect(doctorId) {
-        if (doctorId > 0) {
-            viewModel.loadDoctor(doctorId)
+        if (doctorId > 0) viewModel.loadDoctor(doctorId)
+        session?.patientId?.let { familyViewModel.loadFamilyMembers(it) }
+    }
+
+    LaunchedEffect(date, doctorId) {
+        if (doctorId > 0 && date.isNotBlank()) {
+            viewModel.loadSlots(doctorId, date)
         }
     }
 
@@ -76,6 +91,29 @@ fun AppointmentBookingScreen(
                 text = "${doctor.fullName} • ${doctor.specialization}",
                 style = MaterialTheme.typography.bodyLarge
             )
+        }
+
+        // Блок выбора пациента
+        if (session?.patientId != null && familyState.familyMembers.isNotEmpty()) {
+            Text(
+                text = "Кім үшін жазыламыз?",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+            )
+            // Кнопка "Өзім үшін"
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = selectedFamilyMember == null,
+                    onClick = { selectedFamilyMember = null },
+                    label = { Text("Өзім үшін") }
+                )
+                familyState.familyMembers.forEach { member ->
+                    FilterChip(
+                        selected = selectedFamilyMember?.id == member.id,
+                        onClick = { selectedFamilyMember = member },
+                        label = { Text(member.fullName.split(" ").firstOrNull() ?: member.fullName) }
+                    )
+                }
+            }
         }
 
         if (session?.patientId == null) {
@@ -179,12 +217,39 @@ fun AppointmentBookingScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        OutlinedTextField(
-            value = time,
-            onValueChange = { time = it },
-            label = { Text("Уақыты (HH:MM)") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (state.availableSlots.isNotEmpty()) {
+            Text(
+                text = "Қолжетімді уақыт",
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                state.availableSlots.take(4).forEach { slot ->
+                    FilterChip(
+                        selected = selectedTime == slot,
+                        onClick = { selectedTime = slot; time = slot },
+                        label = { Text(slot) }
+                    )
+                }
+            }
+            if (state.availableSlots.size > 4) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    state.availableSlots.drop(4).take(4).forEach { slot ->
+                        FilterChip(
+                            selected = selectedTime == slot,
+                            onClick = { selectedTime = slot; time = slot },
+                            label = { Text(slot) }
+                        )
+                    }
+                }
+            }
+        } else {
+            OutlinedTextField(
+                value = time,
+                onValueChange = { time = it },
+                label = { Text("Уақыты (HH:MM)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         OutlinedTextField(
             value = reason,
@@ -207,7 +272,7 @@ fun AppointmentBookingScreen(
             )
         }
 
-        val patientId = session?.patientId
+        val patientId = selectedFamilyMember?.id ?: session?.patientId
         Button(
             onClick = {
                 if (patientId != null) {
