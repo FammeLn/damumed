@@ -23,7 +23,6 @@
         android:debuggable="true"
         android:extractNativeLibs="false"
         android:label="@string/app_name"
-        android:testOnly="true"
         android:usesCleartextTraffic="true" >
         <activity
             android:name="com.damumed.intelliheart.MainActivity"

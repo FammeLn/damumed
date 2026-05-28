@@ -53,5 +53,13 @@ class Patient(
 
     // Флаг активности аккаунта
     @Column(nullable = false)
-    var isActive: Boolean = true
+    var isActive: Boolean = true,
+
+    // ID основного профиля (если это член семьи)
+    @Column
+    val primaryPatientId: Long? = null,
+
+    // Тип родства (Сын, Дочь, Мать, и т.д.)
+    @Column
+    val relationType: String? = null
 )

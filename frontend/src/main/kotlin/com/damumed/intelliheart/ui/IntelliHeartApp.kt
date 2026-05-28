@@ -28,7 +28,8 @@ import com.damumed.intelliheart.ui.screens.RegisterScreen
 import com.damumed.intelliheart.ui.screens.FamilyMembersScreen
 import com.damumed.intelliheart.ui.screens.AnalysesScreen
 import com.damumed.intelliheart.ui.screens.RemindersScreen
-import com.damumed.intelliheart.ui.screens.AnalysesScreen
+import com.damumed.intelliheart.ui.screens.ChatSupportScreen
+import com.damumed.intelliheart.ui.screens.SettingsScreen
 
 /**
  * Основной компонент приложения с навигацией
@@ -215,6 +216,12 @@ fun IntelliHeartApp() {
                             onNavigateToFamily = {
                                 navController.navigate(Screen.FamilyMembersScreen.route)
                             },
+                            onNavigateToChat = {
+                                navController.navigate(Screen.ChatSupportScreen.route)
+                            },
+                            onNavigateToSettings = {
+                                navController.navigate(Screen.SettingsScreen.route)
+                            },
                             onLogout = {
                                 authState.value = AuthState()
                             }
@@ -245,6 +252,53 @@ fun IntelliHeartApp() {
                             session = authState.value.session,
                             onSuccess = {
                                 currentRoute.value = Screen.HomeScreen.route
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+
+                    composable(Screen.ChatSupportScreen.route) {
+                        ChatSupportScreen(
+                            onBack = {
+                                navController.popBackStack()
+                            },
+                            onNavigateToAppointments = {
+                                currentRoute.value = Screen.AppointmentScreen.route
+                                navController.navigate(Screen.AppointmentScreen.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    restoreState = true
+                                }
+                            },
+                            onNavigateToCallDoctor = {
+                                currentRoute.value = Screen.CallDoctorHomeScreen.route
+                                navController.navigate(Screen.CallDoctorHomeScreen.route)
+                            },
+                            onNavigateToRecords = {
+                                currentRoute.value = Screen.MedicalRecordScreen.route
+                                navController.navigate(Screen.MedicalRecordScreen.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    restoreState = true
+                                }
+                            },
+                            onNavigateToProfile = {
+                                currentRoute.value = Screen.ProfileScreen.route
+                                navController.navigate(Screen.ProfileScreen.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    restoreState = true
+                                }
+                            }
+                        )
+                    }
+
+                    composable(Screen.SettingsScreen.route) {
+                        SettingsScreen(
+                            onBack = {
                                 navController.popBackStack()
                             }
                         )

@@ -1,4 +1,4 @@
-#Thu May 21 19:20:21 QYZT 2026
+#Wed May 27 14:26:11 QYZT 2026
 base.0=D\:\\VUZ-files\\6_semester\\android\\Damumed\\frontend\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=D\:\\VUZ-files\\6_semester\\android\\Damumed\\frontend\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
 base.10=D\:\\VUZ-files\\6_semester\\android\\Damumed\\frontend\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\8\\classes.dex

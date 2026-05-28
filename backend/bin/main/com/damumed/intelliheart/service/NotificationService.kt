@@ -51,4 +51,18 @@ class NotificationService(
             userId = notification.userId
         )
     }
+
+    fun createSystemNotification(title: String, message: String, userId: Long?) {
+        if (title.isBlank() || message.isBlank()) {
+            return
+        }
+
+        notificationRepository.save(
+            AppNotification(
+                title = title,
+                message = message,
+                userId = userId
+            )
+        )
+    }
 }

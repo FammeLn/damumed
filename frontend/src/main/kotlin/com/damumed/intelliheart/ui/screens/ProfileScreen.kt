@@ -22,7 +22,9 @@ import com.damumed.intelliheart.ui.auth.AuthSession
 fun ProfileScreen(
     session: AuthSession?,
     onLogout: () -> Unit = {},
-    onNavigateToFamily: () -> Unit = {}
+    onNavigateToFamily: () -> Unit = {},
+    onNavigateToChat: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -107,6 +109,40 @@ fun ProfileScreen(
         }
 
         Spacer(modifier = Modifier.weight(1f))
+
+        // Кнопка перехода к чату поддержки
+        FilledTonalButton(
+            onClick = onNavigateToChat,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = "Қолдау",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Кнопка перехода в настройки
+        FilledTonalButton(
+            onClick = onNavigateToSettings,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = "Параметрлер",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Кнопка перехода к семейному профилю
         FilledTonalButton(

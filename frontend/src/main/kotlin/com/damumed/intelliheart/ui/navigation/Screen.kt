@@ -8,6 +8,8 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -99,6 +101,20 @@ sealed class Screen(
         route = "register",
         displayName = "Тіркелу",
         icon = Icons.Default.Person
+    )
+
+    // Экран чата поддержки
+    object ChatSupportScreen : Screen(
+        route = "chat_support",
+        displayName = "Қолдау",
+        icon = Icons.Default.Chat
+    )
+
+    // Экран настроек
+    object SettingsScreen : Screen(
+        route = "settings",
+        displayName = "Параметрлер",
+        icon = Icons.Default.Settings
     )
 
     companion object {
