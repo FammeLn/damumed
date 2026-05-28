@@ -4,12 +4,14 @@ IntelliHeart ML Microservice
 """
 
 import os
+import json
 import logging
 from typing import Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import joblib
 import numpy as np
+import httpx
 
 # Конфигурация логирования
 logging.basicConfig(
@@ -28,6 +30,114 @@ app = FastAPI(
 # Глобальные переменные для модели и векторизатора
 model = None
 vectorizer = None
+
+# Конфигурация LLM (OpenAI-compatible)
+LLM_ENABLED = os.getenv("LLM_ENABLED", "false").lower() in ("1", "true", "yes", "y")
+LLM_API_URL = os.getenv("LLM_API_URL", "https://api.openai.com/v1").rstrip("/")
+LLM_API_KEY = os.getenv("LLM_API_KEY")
+LLM_MODEL = os.getenv("LLM_MODEL")
+
+ALLOWED_ACTIONS = {
+    "NAVIGATE_TO_APPOINTMENT",
+    "NAVIGATE_TO_RECORDS",
+    "CALL_DOCTOR",
+    "NAVIGATE_TO_PROFILE",
+    "NONE"
+}
+
+SYSTEM_PROMPT = (
+    "You are a medical voice assistant for a mobile app. "
+    "Determine the user's intent and respond in Kazakh. "
+    "Return ONLY JSON with keys: text (string), action (string). "
+    "Allowed actions: NAVIGATE_TO_APPOINTMENT, NAVIGATE_TO_RECORDS, "
+    "CALL_DOCTOR, NAVIGATE_TO_PROFILE, NONE. "
+    "Do not include any extra keys or explanations."
+)
+
+
+def is_llm_configured() -> bool:
+    return LLM_ENABLED and bool(LLM_API_KEY) and bool(LLM_MODEL)
+
+
+def parse_llm_json(content: str) -> Optional[dict]:
+    try:
+        return json.loads(content)
+    except Exception:
+        start = content.find("{")
+        end = content.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            return json.loads(content[start:end + 1])
+    return None
+
+
+async def call_llm(text: str) -> Optional["PredictResponse"]:
+    if not is_llm_configured():
+        return None
+
+    payload = {
+        "model": LLM_MODEL,
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": text}
+        ],
+        "temperature": 0.2,
+        "max_tokens": 200
+    }
+
+    headers = {
+        "Authorization": f"Bearer {LLM_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=12.0) as client:
+            response = await client.post(
+                f"{LLM_API_URL}/chat/completions",
+                headers=headers,
+                json=payload
+            )
+            response.raise_for_status()
+            data = response.json()
+            content = data["choices"][0]["message"]["content"]
+            parsed = parse_llm_json(content)
+            if not parsed:
+                logger.warning("LLM вернул некорректный JSON: %s", content)
+                return None
+
+            action = parsed.get("action")
+            text_out = parsed.get("text")
+            if not isinstance(text_out, str) or not isinstance(action, str):
+                return None
+            if action not in ALLOWED_ACTIONS:
+                logger.warning("LLM вернул неизвестный action: %s", action)
+                return None
+            return PredictResponse(text=text_out, action=action)
+    except Exception as e:
+        logger.error("Ошибка LLM запроса: %s", str(e))
+        return None
+
+
+def predict_with_classifier(text: str) -> PredictResponse:
+    if model is None or vectorizer is None:
+        logger.error("Модель не загружена")
+        raise HTTPException(
+            status_code=503,
+            detail="Модель еще не загружена. Повторите попытку позже."
+        )
+
+    text_vector = vectorizer.transform([text])
+    prediction = model.predict(text_vector)
+    probabilities = model.predict_proba(text_vector)
+    predicted_intent = prediction[0]
+    confidence = np.max(probabilities[0])
+
+    logger.info(f"Предсказан интент: {predicted_intent} (уверенность: {confidence:.2f})")
+
+    response = INTENT_RESPONSES.get(
+        predicted_intent,
+        INTENT_RESPONSES["UNKNOWN"]
+    )
+    return PredictResponse(**response)
 
 # Маппинг интентов на казахские ответы
 INTENT_RESPONSES = {
@@ -94,8 +204,11 @@ async def startup_event():
         logger.info("✅ Модель и векторизатор успешно загружены")
         
     except Exception as e:
-        logger.error(f"❌ Ошибка при загрузке модели: {str(e)}")
-        raise RuntimeError(f"Не удалось загрузить модель: {str(e)}")
+        if is_llm_configured():
+            logger.warning(f"⚠️ Модель не загружена, но LLM включен: {str(e)}")
+        else:
+            logger.error(f"❌ Ошибка при загрузке модели: {str(e)}")
+            raise RuntimeError(f"Не удалось загрузить модель: {str(e)}")
 
 
 @app.get("/health")
@@ -106,7 +219,8 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "IntelliHeart ML Service",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "llmEnabled": is_llm_configured()
     }
 
 
@@ -125,14 +239,6 @@ async def predict(request: PredictRequest):
         HTTPException: Если модель не загружена или текст пуст
     """
     
-    # Проверяем, загружена ли модель
-    if model is None or vectorizer is None:
-        logger.error("Модель не загружена")
-        raise HTTPException(
-            status_code=503,
-            detail="Модель еще не загружена. Повторите попытку позже."
-        )
-    
     # Проверяем входной текст
     if not request.text or len(request.text.strip()) == 0:
         logger.warning("Получен пустой текст")
@@ -141,31 +247,17 @@ async def predict(request: PredictRequest):
             detail="Текст не может быть пустым"
         )
     
+    logger.info(f"Обработка текста: {request.text[:50]}...")
+
+    if is_llm_configured():
+        llm_response = await call_llm(request.text)
+        if llm_response:
+            return llm_response
+
     try:
-        logger.info(f"Обработка текста: {request.text[:50]}...")
-        
-        # Векторизуем текст
-        text_vector = vectorizer.transform([request.text])
-        
-        # Получаем предсказание от модели
-        # Модель возвращает вероятности для каждого класса
-        prediction = model.predict(text_vector)
-        probabilities = model.predict_proba(text_vector)
-        
-        # Получаем имя предсказанного класса
-        predicted_intent = prediction[0]
-        confidence = np.max(probabilities[0])
-        
-        logger.info(f"Предсказан интент: {predicted_intent} (уверенность: {confidence:.2f})")
-        
-        # Получаем ответ из маппинга
-        response = INTENT_RESPONSES.get(
-            predicted_intent,
-            INTENT_RESPONSES["UNKNOWN"]
-        )
-        
-        return PredictResponse(**response)
-        
+        return predict_with_classifier(request.text)
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Ошибка при предсказании: {str(e)}")
         raise HTTPException(
@@ -186,31 +278,17 @@ async def batch_predict(requests: list[PredictRequest]):
         list[PredictResponse]: Список результатов
     """
     
-    if model is None or vectorizer is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Модель еще не загружена"
-        )
-    
     results = []
     
     for request in requests:
         try:
-            # Векторизуем текст
-            text_vector = vectorizer.transform([request.text])
-            
-            # Предсказываем интент
-            prediction = model.predict(text_vector)
-            predicted_intent = prediction[0]
-            
-            # Получаем ответ из маппинга
-            response = INTENT_RESPONSES.get(
-                predicted_intent,
-                INTENT_RESPONSES["UNKNOWN"]
-            )
-            
-            results.append(PredictResponse(**response))
-            
+            if is_llm_configured():
+                llm_response = await call_llm(request.text)
+                if llm_response:
+                    results.append(llm_response)
+                    continue
+
+            results.append(predict_with_classifier(request.text))
         except Exception as e:
             logger.error(f"Ошибка при обработке текста '{request.text}': {str(e)}")
             results.append(PredictResponse(**INTENT_RESPONSES["UNKNOWN"]))

@@ -168,6 +168,15 @@ cd backend
 - Параметр: `ml.service.url`
 - Переменная окружения: `ML_SERVICE_URL`
 
+### ML Service -> LLM (опционально)
+
+LLM слой подключается в `ml_service` при наличии ключа и модели. Если LLM не настроен, сервис использует текущую ML‑классификацию интентов.
+
+- `LLM_ENABLED` — `true/false` (по умолчанию `false`)
+- `LLM_API_URL` — base URL (по умолчанию `https://api.openai.com/v1`)
+- `LLM_API_KEY` — API ключ
+- `LLM_MODEL` — имя модели (например, `gpt-4o-mini`)
+
 ### PostgreSQL (backend)
 
 Backend теперь работает с PostgreSQL по умолчанию.
