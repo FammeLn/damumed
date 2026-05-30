@@ -24,6 +24,8 @@ import com.damumed.intelliheart.network.dto.RescheduleAppointmentRequest
 import com.damumed.intelliheart.network.dto.TelegramAuthStartRequest
 import com.damumed.intelliheart.network.dto.TelegramAuthStartResponse
 import com.damumed.intelliheart.network.dto.TelegramAuthStatusResponse
+import com.damumed.intelliheart.network.dto.ChatMessageResponse
+import com.damumed.intelliheart.network.dto.SendMessageRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -227,5 +229,13 @@ interface ApiService {
         @Path("requestId") requestId: Long
     ): Map<String, String>
 
-    // duplicate declarations removed
+    @GET("/api/assistant/chat/history")
+    suspend fun getChatHistory(
+        @Query("patientId") patientId: Long
+    ): List<ChatMessageResponse>
+
+    @POST("/api/assistant/chat/send")
+    suspend fun sendChatMessage(
+        @Body request: SendMessageRequest
+    ): AssistantResponse
 }

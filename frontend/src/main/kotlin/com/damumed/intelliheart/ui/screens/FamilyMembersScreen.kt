@@ -1,6 +1,7 @@
 package com.damumed.intelliheart.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -73,7 +74,8 @@ fun FamilyMembersScreen(
                             gender = gender,
                             phoneNumber = phone,
                             address = address,
-                            medicalHistory = medicalHistory
+                            medicalHistory = medicalHistory,
+                            userId = session?.userId
                         ) { patient ->
                             onPrimaryCreated(patient.id)
                         }
@@ -226,27 +228,82 @@ fun AddFamilyMemberDialog(
                 )
                 OutlinedTextField(
                     value = iin,
-                    onValueChange = { iin = it },
+                    onValueChange = { input ->
+                        val digits = input.filter { it.isDigit() }
+                        iin = digits.take(12)
+                    },
                     label = { Text("ИИН (12 сан)") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
-                OutlinedTextField(
-                    value = dobText,
-                    onValueChange = { dobText = it; dobError = false },
-                    label = { Text("Туған күні (YYYY-MM-DD)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    isError = dobError,
-                    supportingText = { if (dobError) Text("Дұрыс формат: 2005-03-15") }
-                )
+
+                var showDatePicker by remember { mutableStateOf(false) }
+                
+                if (showDatePicker) {
+                    val datePickerState = rememberDatePickerState()
+                    DatePickerDialog(
+                        onDismissRequest = { showDatePicker = false },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    datePickerState.selectedDateMillis?.let { millis ->
+                                        val selectedLocalDate = java.time.Instant.ofEpochMilli(millis)
+                                            .atZone(java.time.ZoneId.of("UTC"))
+                                            .toLocalDate()
+                                        dobText = selectedLocalDate.toString()
+                                        dobError = false
+                                    }
+                                    showDatePicker = false
+                                }
+                            ) {
+                                Text("Мақұлдау")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDatePicker = false }) {
+                                Text("Бас тарту")
+                            }
+                        }
+                    ) {
+                        DatePicker(state = datePickerState)
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showDatePicker = true }
+                ) {
+                    OutlinedTextField(
+                        value = dobText,
+                        onValueChange = {},
+                        label = { Text("Туған күні (YYYY-MM-DD)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        readOnly = true,
+                        enabled = false,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledBorderColor = if (dobError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledSupportingTextColor = MaterialTheme.colorScheme.error
+                        ),
+                        isError = dobError,
+                        supportingText = { if (dobError) Text("Туған күнін таңдаңыз") }
+                    )
+                }
+
                 OutlinedTextField(
                     value = phone,
-                    onValueChange = { phone = it },
+                    onValueChange = { input ->
+                        val digits = input.filter { it.isDigit() || it == '+' }
+                        phone = digits.take(12)
+                    },
                     label = { Text("Телефон") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                 )
                 OutlinedTextField(
                     value = address,
@@ -319,6 +376,7 @@ fun AddFamilyMemberDialog(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PrimaryPatientForm(
     isSaving: Boolean,
@@ -363,36 +421,82 @@ private fun PrimaryPatientForm(
         )
         OutlinedTextField(
             value = iin,
-            onValueChange = { iin = it },
+            onValueChange = { input ->
+                val digits = input.filter { it.isDigit() }
+                iin = digits.take(12)
+            },
             label = { Text("ИИН (12 сан)") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-        OutlinedTextField(
-            value = dobText,
-            onValueChange = { dobText = it; dobError = false },
-            label = { Text("Туған күні (YYYY-MM-DD)") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            isError = dobError,
-            supportingText = { if (dobError) Text("Дұрыс формат: 2005-03-15") }
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("М", "Ж").forEach { g ->
-                FilterChip(
-                    selected = gender == g,
-                    onClick = { gender = g },
-                    label = { Text(if (g == "М") "Ер" else "Әйел") }
-                )
+
+        var showDatePicker by remember { mutableStateOf(false) }
+        
+        if (showDatePicker) {
+            val datePickerState = rememberDatePickerState()
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val selectedLocalDate = java.time.Instant.ofEpochMilli(millis)
+                                    .atZone(java.time.ZoneId.of("UTC"))
+                                    .toLocalDate()
+                                dobText = selectedLocalDate.toString()
+                                dobError = false
+                            }
+                            showDatePicker = false
+                        }
+                    ) {
+                        Text("Мақұлдау")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text("Бас тарту")
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState)
             }
         }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { showDatePicker = true }
+        ) {
+            OutlinedTextField(
+                value = dobText,
+                onValueChange = {},
+                label = { Text("Туған күні (YYYY-MM-DD)") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                readOnly = true,
+                enabled = false,
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = if (dobError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledSupportingTextColor = MaterialTheme.colorScheme.error
+                ),
+                isError = dobError,
+                supportingText = { if (dobError) Text("Туған күнін таңдаңыз") }
+            )
+        }
+
         OutlinedTextField(
             value = phone,
-            onValueChange = { phone = it },
+            onValueChange = { input ->
+                val digits = input.filter { it.isDigit() || it == '+' }
+                phone = digits.take(12)
+            },
             label = { Text("Телефон") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
         )
         OutlinedTextField(
             value = address,

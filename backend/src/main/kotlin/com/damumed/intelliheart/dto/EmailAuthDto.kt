@@ -9,5 +9,6 @@ data class EmailAuthResponse(
     val userId: Long,
     val email: String,
     val accessToken: String,
-    val expiresAt: Long
+    val expiresAt: Long,
+    val patientId: Long? = null
 )

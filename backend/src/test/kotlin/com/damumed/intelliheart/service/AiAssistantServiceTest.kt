@@ -2,6 +2,7 @@ package com.damumed.intelliheart.ai
 
 import com.damumed.intelliheart.dto.AssistantAction
 import com.damumed.intelliheart.dto.AssistantRequest
+import com.damumed.intelliheart.repository.ChatMessageRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -22,7 +23,8 @@ class AiAssistantServiceTest {
     fun setUp() {
         // Инициализируем сервис перед каждым тестом
         val restTemplate = mock<org.springframework.web.client.RestTemplate>()
-        service = AiAssistantService(restTemplate)
+        val chatMessageRepository = mock<ChatMessageRepository>()
+        service = AiAssistantService(restTemplate, chatMessageRepository)
     }
 
     /**

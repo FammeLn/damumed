@@ -11,7 +11,8 @@ data class CreatePatientRequestDto(
     val address: String,
     val medicalHistory: String? = null,
     val primaryPatientId: Long? = null,
-    val relationType: String? = null
+    val relationType: String? = null,
+    val userId: Long? = null
 )
 
 data class PatientDto(
@@ -25,5 +26,6 @@ data class PatientDto(
     val medicalHistory: String? = null,
     val isActive: Boolean,
     val primaryPatientId: Long? = null,
-    val relationType: String? = null
+    val relationType: String? = null,
+    val userId: Long? = null
 )

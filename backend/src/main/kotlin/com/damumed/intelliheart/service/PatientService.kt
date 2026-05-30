@@ -25,8 +25,47 @@ class PatientService(
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Пациент деректері толық емес")
         }
 
-        if (patientRepository.existsByIin(iin)) {
-            throw ResponseStatusException(HttpStatus.CONFLICT, "Бұл ИИН бойынша пациент бар")
+        val existingPatientByIin = patientRepository.findByIin(iin)
+        val existingPatientByPhone = patientRepository.findByPhoneNumber(phoneNumber)
+
+        val patientToUpdate = if (existingPatientByIin.isPresent) {
+            existingPatientByIin.get()
+        } else if (existingPatientByPhone.isPresent && request.primaryPatientId == null) {
+            existingPatientByPhone.get()
+        } else {
+            null
+        }
+
+        if (patientToUpdate != null) {
+            val targetIin = if (patientToUpdate.iin != iin && !patientRepository.existsByIin(iin)) {
+                iin
+            } else {
+                patientToUpdate.iin
+            }
+
+            val targetPhoneNumber = if (patientToUpdate.phoneNumber != phoneNumber && !patientRepository.existsByPhoneNumber(phoneNumber)) {
+                phoneNumber
+            } else {
+                patientToUpdate.phoneNumber
+            }
+
+            val updatedPatient = Patient(
+                id = patientToUpdate.id,
+                iin = targetIin,
+                fullName = fullName,
+                dateOfBirth = request.dateOfBirth,
+                gender = gender,
+                phoneNumber = targetPhoneNumber,
+                medicalHistory = request.medicalHistory ?: patientToUpdate.medicalHistory,
+                address = address,
+                isActive = patientToUpdate.isActive,
+                primaryPatientId = patientToUpdate.primaryPatientId ?: request.primaryPatientId,
+                relationType = patientToUpdate.relationType ?: request.relationType,
+                createdAt = patientToUpdate.createdAt,
+                updatedAt = System.currentTimeMillis(),
+                userId = patientToUpdate.userId ?: request.userId
+            )
+            return mapToDto(patientRepository.save(updatedPatient))
         }
 
         // Для членов семьи телефон может совпадать, сгенерируем уникальный для БД
@@ -47,7 +86,8 @@ class PatientService(
             address = address,
             isActive = true,
             primaryPatientId = request.primaryPatientId,
-            relationType = request.relationType
+            relationType = request.relationType,
+            userId = request.userId
         )
 
         return mapToDto(patientRepository.save(patient))
@@ -91,7 +131,8 @@ class PatientService(
             medicalHistory = patient.medicalHistory,
             isActive = patient.isActive,
             primaryPatientId = patient.primaryPatientId,
-            relationType = patient.relationType
+            relationType = patient.relationType,
+            userId = patient.userId
         )
     }
 }

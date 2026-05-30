@@ -36,7 +36,7 @@ class AuthViewModel : ViewModel() {
                         email = response.email,
                         accessToken = response.accessToken,
                         expiresAt = response.expiresAt,
-                        patientId = null
+                        patientId = response.patientId
                     )
                 )
             } catch (e: Exception) {
@@ -64,7 +64,7 @@ class AuthViewModel : ViewModel() {
                         email = response.email,
                         accessToken = response.accessToken,
                         expiresAt = response.expiresAt,
-                        patientId = null
+                        patientId = response.patientId
                     )
                 )
             } catch (e: Exception) {

@@ -3,6 +3,7 @@ package com.damumed.intelliheart.ui.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.HealthAndSafety
@@ -32,13 +33,13 @@ sealed class Screen(
     object AppointmentScreen : Screen(
         route = "appointment",
         displayName = "Дәрігерге жазылу",
-        icon = Icons.Default.Menu
+        icon = Icons.Default.Event
     )
 
     object AppointmentBookingScreen : Screen(
         route = "appointment_booking/{doctorId}",
         displayName = "Жазылу",
-        icon = Icons.Default.Menu
+        icon = Icons.Default.Event
     ) {
         fun createRoute(doctorId: Long): String = "appointment_booking/$doctorId"
     }
@@ -59,7 +60,7 @@ sealed class Screen(
 
     object NotificationsScreen : Screen(
         route = "notifications",
-        displayName = "Уведомления",
+        displayName = "Хабарландырулар",
         icon = Icons.Default.Notifications
     )
 

@@ -60,7 +60,7 @@ fun NotificationsScreen(
                 NotificationHelper.showNotification(context, it.title, it.message)
             }
         } else {
-            Toast.makeText(context, "Уведомленияға рұқсат берілмеді", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Хабарландыруларға рұқсат берілмеді", Toast.LENGTH_SHORT).show()
         }
         pendingNotification = null
     }
@@ -77,7 +77,7 @@ fun NotificationsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Уведомления",
+            text = "Хабарландырулар",
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -110,7 +110,7 @@ fun NotificationsScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Тесттік уведомление жіберу")
+            Text(text = "Тесттік хабарлама жіберу")
         }
 
         when (uiState) {
@@ -126,7 +126,7 @@ fun NotificationsScreen(
             is NotificationsUiState.Success -> {
                 if (uiState.notifications.isEmpty()) {
                     Text(
-                        text = "Әзірге уведомление жоқ",
+                        text = "Әзірге хабарламалар жоқ",
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {

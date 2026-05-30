@@ -1,0 +1,385 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 980" width="1100" height="980" font-family="'JetBrains Mono', 'Courier New', Consolas, monospace">
+
+  <defs>
+    <linearGradient id="winBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E1E2E"/>
+      <stop offset="100%" style="stop-color:#181825"/>
+    </linearGradient>
+    <linearGradient id="titleBar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#11111B"/>
+      <stop offset="100%" style="stop-color:#181825"/>
+    </linearGradient>
+    <linearGradient id="sidebar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#12121E"/>
+      <stop offset="100%" style="stop-color:#181825"/>
+    </linearGradient>
+    <linearGradient id="tabActive" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E1E2E"/>
+      <stop offset="100%" style="stop-color:#252535"/>
+    </linearGradient>
+    <linearGradient id="greenBadge" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#166534"/>
+      <stop offset="100%" style="stop-color:#15803D"/>
+    </linearGradient>
+    <filter id="sh">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.7"/>
+    </filter>
+    <filter id="shSm">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Outer window shadow -->
+  <rect x="20" y="20" width="1060" height="940" rx="12" fill="#000" opacity="0.4"/>
+
+  <!-- ════════ IDE WINDOW ════════ -->
+  <rect x="14" y="14" width="1072" height="952" rx="12" fill="url(#winBg)" filter="url(#sh)"/>
+
+  <!-- ── Title bar ── -->
+  <rect x="14" y="14" width="1072" height="36" rx="12" fill="url(#titleBar)"/>
+  <rect x="14" y="36" width="1072" height="14" fill="url(#titleBar)"/>
+  <!-- Traffic lights -->
+  <circle cx="42" cy="32" r="7" fill="#FF5F57"/>
+  <circle cx="64" cy="32" r="7" fill="#FFBD2E"/>
+  <circle cx="86" cy="32" r="7" fill="#28C840"/>
+  <!-- Title text -->
+  <text x="550" y="36" text-anchor="middle" font-size="13" fill="#CDD6F4" opacity="0.8">AiAssistantControllerTest.kt — IntelliJ IDEA | Damumed Backend</text>
+
+  <!-- ── Tab bar ── -->
+  <rect x="14" y="50" width="1072" height="34" fill="#11111B"/>
+  <!-- Tab 1 active -->
+  <rect x="14" y="50" width="280" height="34" fill="url(#tabActive)"/>
+  <rect x="14" y="80" width="280" height="4" fill="#89B4FA"/>
+  <text x="30" y="72" font-size="11" fill="#89B4FA">📄 AiAssistantControllerTest.kt</text>
+  <!-- Tab 2 -->
+  <rect x="294" y="50" width="270" height="34" fill="#11111B"/>
+  <text x="308" y="72" font-size="11" fill="#6C7086">📄 AiAssistantServiceTest.kt</text>
+  <!-- Tab 3 -->
+  <rect x="564" y="50" width="250" height="34" fill="#11111B"/>
+  <text x="578" y="72" font-size="11" fill="#6C7086">📄 DoctorControllerTest.kt</text>
+
+  <!-- ── Sidebar ── -->
+  <rect x="14" y="84" width="200" height="882" fill="url(#sidebar)"/>
+  <line x1="214" y1="84" x2="214" y2="966" stroke="#313244" stroke-width="1"/>
+
+  <!-- Sidebar header -->
+  <text x="24" y="108" font-size="11" font-weight="700" fill="#89B4FA">📁 Project</text>
+  <line x1="14" y1="116" x2="214" y2="116" stroke="#313244" stroke-width="0.7"/>
+
+  <!-- Sidebar tree -->
+  <text x="24" y="134" font-size="10" fill="#6C7086">▼ intelliheart</text>
+  <text x="30" y="150" font-size="10" fill="#6C7086">  ▼ test</text>
+  <text x="36" y="166" font-size="10" fill="#6C7086">    ▼ kotlin</text>
+  <text x="42" y="182" font-size="10" fill="#6C7086">      ▼ controller</text>
+  <rect x="42" y="188" width="160" height="16" rx="3" fill="#313244" opacity="0.6"/>
+  <text x="50" y="200" font-size="10" fill="#89B4FA">        AiAssistantControllerTest</text>
+  <text x="50" y="216" font-size="10" fill="#6C7086">        DoctorControllerTest</text>
+  <text x="42" y="232" font-size="10" fill="#6C7086">      ▼ service</text>
+  <text x="50" y="248" font-size="10" fill="#6C7086">        AiAssistantServiceTest</text>
+  <text x="50" y="264" font-size="10" fill="#6C7086">        DoctorServiceTest</text>
+
+  <line x1="14" y1="276" x2="214" y2="276" stroke="#313244" stroke-width="0.5"/>
+
+  <!-- Test result panel in sidebar -->
+  <text x="24" y="296" font-size="11" font-weight="700" fill="#A6E3A1">✅ Test Results</text>
+  <text x="24" y="315" font-size="9.5" fill="#A6E3A1">● 6 passed</text>
+  <text x="24" y="330" font-size="9.5" fill="#F38BA8">● 0 failed</text>
+  <text x="24" y="345" font-size="9.5" fill="#CBA6F7">● 0 skipped</text>
+  <text x="24" y="362" font-size="9.5" fill="#6C7086">Duration: 0.42s</text>
+
+  <line x1="14" y1="374" x2="214" y2="374" stroke="#313244" stroke-width="0.5"/>
+
+  <!-- Annotations help -->
+  <text x="24" y="394" font-size="10" font-weight="700" fill="#FAB387">📝 Annotations</text>
+  <text x="24" y="410" font-size="9" fill="#94E2D5">@Test</text>
+  <text x="24" y="424" font-size="9" fill="#94E2D5">@DisplayName</text>
+  <text x="24" y="438" font-size="9" fill="#94E2D5">@ExtendWith</text>
+  <text x="24" y="452" font-size="9" fill="#94E2D5">@Mock</text>
+  <text x="24" y="466" font-size="9" fill="#94E2D5">@InjectMocks</text>
+  <text x="24" y="480" font-size="9" fill="#94E2D5">@BeforeEach</text>
+
+  <line x1="14" y1="494" x2="214" y2="494" stroke="#313244" stroke-width="0.5"/>
+  <text x="24" y="514" font-size="10" font-weight="700" fill="#FAB387">📦 Frameworks</text>
+  <text x="24" y="530" font-size="9" fill="#6C7086">JUnit 5 (Jupiter)</text>
+  <text x="24" y="544" font-size="9" fill="#6C7086">Mockito-Kotlin</text>
+  <text x="24" y="558" font-size="9" fill="#6C7086">Spring Boot Test</text>
+
+  <!-- ════════════════════════════════════════
+       MAIN CODE EDITOR AREA
+  ════════════════════════════════════════ -->
+  <!-- Editor bg -->
+  <rect x="214" y="84" width="886" height="882" fill="#1E1E2E"/>
+
+  <!-- Line numbers gutter -->
+  <rect x="214" y="84" width="38" height="882" fill="#181825"/>
+  <line x1="252" y1="84" x2="252" y2="966" stroke="#313244" stroke-width="0.8"/>
+
+  <!-- ── CODE CONTENT ── -->
+  <!-- Helper macro: each code line is 18px tall, starting y=110 -->
+
+  <!-- Line 1 -->
+  <text x="220" y="110" font-size="9.5" fill="#45475A">1</text>
+  <text x="260" y="110" font-size="10" fill="#CBA6F7">package </text>
+  <text x="312" y="110" font-size="10" fill="#CDD6F4">com.damumed.intelliheart.ai</text>
+
+  <!-- Line 2 blank -->
+  <text x="220" y="128" font-size="9.5" fill="#45475A">2</text>
+
+  <!-- Lines 3-5 imports -->
+  <text x="220" y="146" font-size="9.5" fill="#45475A">3</text>
+  <text x="260" y="146" font-size="10" fill="#CBA6F7">import </text>
+  <text x="302" y="146" font-size="10" fill="#89DCEB">com.damumed.intelliheart.dto.<tspan fill="#F38BA8">AssistantAction</tspan></text>
+
+  <text x="220" y="164" font-size="9.5" fill="#45475A">4</text>
+  <text x="260" y="164" font-size="10" fill="#CBA6F7">import </text>
+  <text x="302" y="164" font-size="10" fill="#89DCEB">com.damumed.intelliheart.dto.<tspan fill="#F38BA8">AssistantRequest</tspan></text>
+
+  <text x="220" y="182" font-size="9.5" fill="#45475A">5</text>
+  <text x="260" y="182" font-size="10" fill="#CBA6F7">import </text>
+  <text x="302" y="182" font-size="10" fill="#89DCEB">com.damumed.intelliheart.dto.<tspan fill="#F38BA8">AssistantResponse</tspan></text>
+
+  <text x="220" y="200" font-size="9.5" fill="#45475A">6</text>
+  <text x="260" y="200" font-size="10" fill="#CBA6F7">import </text>
+  <text x="302" y="200" font-size="10" fill="#89DCEB">org.junit.jupiter.api.<tspan fill="#F38BA8">DisplayName</tspan></text>
+
+  <text x="220" y="218" font-size="9.5" fill="#45475A">7</text>
+  <text x="260" y="218" font-size="10" fill="#CBA6F7">import </text>
+  <text x="302" y="218" font-size="10" fill="#89DCEB">org.junit.jupiter.api.<tspan fill="#F38BA8">Test</tspan></text>
+
+  <text x="220" y="236" font-size="9.5" fill="#45475A">8</text>
+  <text x="260" y="236" font-size="10" fill="#CBA6F7">import </text>
+  <text x="302" y="236" font-size="10" fill="#89DCEB">org.mockito.junit.jupiter.<tspan fill="#F38BA8">MockitoExtension</tspan></text>
+
+  <text x="220" y="254" font-size="9.5" fill="#45475A">9</text>
+  <text x="260" y="254" font-size="10" fill="#CBA6F7">import </text>
+  <text x="302" y="254" font-size="10" fill="#89DCEB">org.mockito.kotlin.<tspan fill="#F38BA8">any</tspan>, <tspan fill="#F38BA8">given</tspan>, <tspan fill="#F38BA8">verify</tspan></text>
+
+  <text x="220" y="272" font-size="9.5" fill="#45475A">10</text>
+  <text x="260" y="272" font-size="10" fill="#CBA6F7">import </text>
+  <text x="302" y="272" font-size="10" fill="#89DCEB">org.springframework.http.<tspan fill="#F38BA8">HttpStatus</tspan></text>
+
+  <!-- blank -->
+  <text x="220" y="290" font-size="9.5" fill="#45475A">11</text>
+
+  <!-- Class annotations -->
+  <text x="220" y="308" font-size="9.5" fill="#45475A">12</text>
+  <text x="260" y="308" font-size="10" fill="#FAB387">@ExtendWith</text>
+  <text x="332" y="308" font-size="10" fill="#CDD6F4">(MockitoExtension::class)</text>
+
+  <text x="220" y="326" font-size="9.5" fill="#45475A">13</text>
+  <text x="260" y="326" font-size="10" fill="#FAB387">@DisplayName</text>
+  <text x="336" y="326" font-size="10" fill="#A6E3A1">("AiAssistantController - Тесты REST API")</text>
+
+  <!-- Class declaration -->
+  <text x="220" y="344" font-size="9.5" fill="#45475A">14</text>
+  <text x="260" y="344" font-size="10" fill="#CBA6F7">class </text>
+  <text x="292" y="344" font-size="10" fill="#89B4FA">AiAssistantControllerTest</text>
+  <text x="461" y="344" font-size="10" fill="#CDD6F4"> {</text>
+
+  <!-- @Mock -->
+  <text x="220" y="362" font-size="9.5" fill="#45475A">15</text>
+  <text x="260" y="362" font-size="10" fill="#CDD6F4">    </text>
+  <text x="278" y="362" font-size="10" fill="#FAB387">@Mock</text>
+
+  <text x="220" y="380" font-size="9.5" fill="#45475A">16</text>
+  <text x="278" y="380" font-size="10" fill="#CBA6F7">    private lateinit var </text>
+  <text x="412" y="380" font-size="10" fill="#CDD6F4">aiAssistantService: </text>
+  <text x="514" y="380" font-size="10" fill="#89DCEB">AiAssistantService</text>
+
+  <!-- @InjectMocks -->
+  <text x="220" y="398" font-size="9.5" fill="#45475A">17</text>
+  <text x="278" y="398" font-size="10" fill="#FAB387">    @InjectMocks</text>
+
+  <text x="220" y="416" font-size="9.5" fill="#45475A">18</text>
+  <text x="278" y="416" font-size="10" fill="#CBA6F7">    private lateinit var </text>
+  <text x="412" y="416" font-size="10" fill="#CDD6F4">controller: </text>
+  <text x="464" y="416" font-size="10" fill="#89DCEB">AiAssistantController</text>
+
+  <!-- blank -->
+  <text x="220" y="434" font-size="9.5" fill="#45475A">19</text>
+
+  <!-- ═══ TEST 1 ═══ -->
+  <!-- Green run gutter for test 1 -->
+  <rect x="253" y="440" width="6" height="72" rx="3" fill="#A6E3A1" opacity="0.7"/>
+
+  <!-- Comment -->
+  <text x="220" y="452" font-size="9.5" fill="#45475A">20</text>
+  <text x="278" y="452" font-size="10" fill="#6C7086">    // ─── Тест 1: Успешная обработка запроса ───────────────────</text>
+
+  <text x="220" y="470" font-size="9.5" fill="#45475A">21</text>
+  <text x="278" y="470" font-size="10" fill="#FAB387">    @Test</text>
+
+  <text x="220" y="488" font-size="9.5" fill="#45475A">22</text>
+  <text x="278" y="488" font-size="10" fill="#FAB387">    @DisplayName</text>
+  <text x="352" y="488" font-size="10" fill="#A6E3A1">("Должен возвращать 200 OK при успешной обработке запроса")</text>
+
+  <text x="220" y="506" font-size="9.5" fill="#45475A">23</text>
+  <text x="278" y="506" font-size="10" fill="#CBA6F7">    fun </text>
+  <text x="306" y="506" font-size="10" fill="#89B4FA">testProcessQuerySuccess</text>
+  <text x="443" y="506" font-size="10" fill="#CDD6F4">() {</text>
+
+  <!-- Body of test 1 -->
+  <text x="220" y="524" font-size="9.5" fill="#45475A">24</text>
+  <text x="278" y="524" font-size="10" fill="#6C7086">        // Дано (Arrange)</text>
+
+  <text x="220" y="542" font-size="9.5" fill="#45475A">25</text>
+  <text x="278" y="542" font-size="10" fill="#CBA6F7">        val </text>
+  <text x="306" y="542" font-size="10" fill="#CDD6F4">request = </text>
+  <text x="355" y="542" font-size="10" fill="#89DCEB">AssistantRequest</text>
+  <text x="453" y="542" font-size="10" fill="#CDD6F4">(text = </text>
+  <text x="492" y="542" font-size="10" fill="#A6E3A1">"жазылу дәрігерге"</text>
+  <text x="596" y="542" font-size="10" fill="#CDD6F4">)</text>
+
+  <text x="220" y="560" font-size="9.5" fill="#45475A">26</text>
+  <text x="278" y="560" font-size="10" fill="#CBA6F7">        val </text>
+  <text x="306" y="560" font-size="10" fill="#CDD6F4">expectedResponse = </text>
+  <text x="398" y="560" font-size="10" fill="#89DCEB">AssistantResponse</text>
+  <text x="496" y="560" font-size="10" fill="#CDD6F4">(</text>
+
+  <text x="220" y="578" font-size="9.5" fill="#45475A">27</text>
+  <text x="278" y="578" font-size="10" fill="#CDD6F4">            text = </text>
+  <text x="344" y="578" font-size="10" fill="#A6E3A1">"Мен сізді дәрігерге жазуға көмектесемін"</text>
+  <text x="625" y="578" font-size="10" fill="#CDD6F4">,</text>
+
+  <text x="220" y="596" font-size="9.5" fill="#45475A">28</text>
+  <text x="278" y="596" font-size="10" fill="#CDD6F4">            action = </text>
+  <text x="348" y="596" font-size="10" fill="#F38BA8">AssistantAction</text>
+  <text x="434" y="596" font-size="10" fill="#CDD6F4">.</text>
+  <text x="440" y="596" font-size="10" fill="#94E2D5">NAVIGATE_TO_APPOINTMENT</text>
+
+  <text x="220" y="614" font-size="9.5" fill="#45475A">29</text>
+  <text x="278" y="614" font-size="10" fill="#CDD6F4">        )</text>
+
+  <!-- given/when/then -->
+  <text x="220" y="632" font-size="9.5" fill="#45475A">30</text>
+  <!-- highlight the given line -->
+  <rect x="260" y="622" width="700" height="16" rx="2" fill="#2D3B2D" opacity="0.5"/>
+  <text x="278" y="634" font-size="10" fill="#89B4FA">        given</text>
+  <text x="318" y="634" font-size="10" fill="#CDD6F4">(aiAssistantService.processQuery(</text>
+  <text x="494" y="634" font-size="10" fill="#FAB387">any</text>
+  <text x="513" y="634" font-size="10" fill="#CDD6F4">())).willReturn(expectedResponse)</text>
+
+  <text x="220" y="650" font-size="9.5" fill="#45475A">31</text>
+  <text x="278" y="650" font-size="10" fill="#6C7086">        // Когда (Act)</text>
+
+  <text x="220" y="668" font-size="9.5" fill="#45475A">32</text>
+  <text x="278" y="668" font-size="10" fill="#CBA6F7">        val </text>
+  <text x="306" y="668" font-size="10" fill="#CDD6F4">response = controller.processQuery(request)</text>
+
+  <text x="220" y="686" font-size="9.5" fill="#45475A">33</text>
+  <text x="278" y="686" font-size="10" fill="#6C7086">        // Тогда (Assert)</text>
+
+  <!-- assert lines with callout badges -->
+  <text x="220" y="704" font-size="9.5" fill="#45475A">34</text>
+  <rect x="260" y="694" width="460" height="16" rx="2" fill="#0F2D4A" opacity="0.7"/>
+  <text x="278" y="706" font-size="10" fill="#89B4FA">        assert</text>
+  <text x="318" y="706" font-size="10" fill="#CDD6F4">(response.statusCode == </text>
+  <text x="455" y="706" font-size="10" fill="#F38BA8">HttpStatus</text>
+  <text x="504" y="706" font-size="10" fill="#CDD6F4">.</text>
+  <text x="510" y="706" font-size="10" fill="#94E2D5">OK</text>
+  <text x="526" y="706" font-size="10" fill="#CDD6F4">)</text>
+  <!-- badge -->
+  <rect x="726" y="694" width="120" height="16" rx="4" fill="#1D4ED8" opacity="0.85"/>
+  <text x="736" y="706" font-size="8.5" fill="#BAE6FD">⚡ assert statusCode</text>
+
+  <text x="220" y="722" font-size="9.5" fill="#45475A">35</text>
+  <rect x="260" y="712" width="540" height="16" rx="2" fill="#0F2D4A" opacity="0.7"/>
+  <text x="278" y="724" font-size="10" fill="#89B4FA">        assert</text>
+  <text x="318" y="724" font-size="10" fill="#CDD6F4">(response.body?.action == </text>
+  <text x="460" y="724" font-size="10" fill="#F38BA8">AssistantAction</text>
+  <text x="546" y="724" font-size="10" fill="#CDD6F4">.</text>
+  <text x="552" y="724" font-size="10" fill="#94E2D5">NAVIGATE_TO_APPOINTMENT</text>
+  <text x="722" y="724" font-size="10" fill="#CDD6F4">)</text>
+  <rect x="732" y="712" width="116" height="16" rx="4" fill="#166534" opacity="0.85"/>
+  <text x="742" y="724" font-size="8.5" fill="#BBF7D0">✅ assert action</text>
+
+  <text x="220" y="740" font-size="9.5" fill="#45475A">36</text>
+  <rect x="260" y="730" width="360" height="16" rx="2" fill="#2D1F4A" opacity="0.7"/>
+  <text x="278" y="742" font-size="10" fill="#89B4FA">        verify</text>
+  <text x="318" y="742" font-size="10" fill="#CDD6F4">(aiAssistantService).processQuery(</text>
+  <text x="511" y="742" font-size="10" fill="#FAB387">any</text>
+  <text x="530" y="742" font-size="10" fill="#CDD6F4">())</text>
+  <rect x="624" y="730" width="120" height="16" rx="4" fill="#6D28D9" opacity="0.85"/>
+  <text x="634" y="742" font-size="8.5" fill="#EDE9FE">🔍 verify call</text>
+
+  <text x="220" y="758" font-size="9.5" fill="#45475A">37</text>
+  <text x="278" y="758" font-size="10" fill="#CDD6F4">    }</text>
+
+  <!-- blank line -->
+  <text x="220" y="776" font-size="9.5" fill="#45475A">38</text>
+
+  <!-- ═══ TEST 2 ═══ -->
+  <rect x="253" y="784" width="6" height="72" rx="3" fill="#A6E3A1" opacity="0.7"/>
+
+  <text x="220" y="796" font-size="9.5" fill="#45475A">39</text>
+  <text x="278" y="796" font-size="10" fill="#6C7086">    // ─── Тест 2: Проверка вызова сервиса ─────────────────────</text>
+
+  <text x="220" y="814" font-size="9.5" fill="#45475A">40</text>
+  <text x="278" y="814" font-size="10" fill="#FAB387">    @Test</text>
+
+  <text x="220" y="832" font-size="9.5" fill="#45475A">41</text>
+  <text x="278" y="832" font-size="10" fill="#FAB387">    @DisplayName</text>
+  <text x="352" y="832" font-size="10" fill="#A6E3A1">("Должен вызвать AiAssistantService при получении запроса")</text>
+
+  <text x="220" y="850" font-size="9.5" fill="#45475A">42</text>
+  <text x="278" y="850" font-size="10" fill="#CBA6F7">    fun </text>
+  <text x="306" y="850" font-size="10" fill="#89B4FA">testServiceInvocation</text>
+  <text x="427" y="850" font-size="10" fill="#CDD6F4">() {</text>
+
+  <text x="220" y="868" font-size="9.5" fill="#45475A">43</text>
+  <text x="278" y="868" font-size="10" fill="#CBA6F7">        val </text>
+  <text x="306" y="868" font-size="10" fill="#CDD6F4">request = </text>
+  <text x="355" y="868" font-size="10" fill="#89DCEB">AssistantRequest</text>
+  <text x="453" y="868" font-size="10" fill="#CDD6F4">(text = </text>
+  <text x="492" y="868" font-size="10" fill="#A6E3A1">"талдау"</text>
+  <text x="540" y="868" font-size="10" fill="#CDD6F4">)</text>
+
+  <text x="220" y="886" font-size="9.5" fill="#45475A">44</text>
+  <text x="278" y="886" font-size="10" fill="#89B4FA">        verify</text>
+  <text x="318" y="886" font-size="10" fill="#CDD6F4">(aiAssistantService).processQuery(request)</text>
+  <rect x="556" y="876" width="136" height="16" rx="4" fill="#6D28D9" opacity="0.85"/>
+  <text x="566" y="888" font-size="8.5" fill="#EDE9FE">🔍 verify exact call</text>
+
+  <text x="220" y="904" font-size="9.5" fill="#45475A">45</text>
+  <text x="278" y="904" font-size="10" fill="#CDD6F4">    }</text>
+
+  <text x="220" y="922" font-size="9.5" fill="#45475A">46</text>
+  <text x="278" y="922" font-size="10" fill="#CDD6F4">}</text>
+
+  <!-- ════════ BOTTOM STATUS BAR ════════ -->
+  <rect x="14" y="948" width="1072" height="18" rx="0" fill="#181825"/>
+  <rect x="14" y="960" width="1072" height="6" rx="0" fill="#181825"/>
+  <text x="220" y="960" font-size="9" fill="#A6E3A1">✅  Tests passed: 6 | ⚠ Warnings: 0 | 🕐 0.42s | UTF-8 | Kotlin 1.9</text>
+
+  <!-- ════════ TEST RUNNER PANEL (right side overlay) ════════ -->
+  <rect x="860" y="88" width="220" height="310" rx="10" fill="#11111B" stroke="#313244" stroke-width="1" opacity="0.97"/>
+  <rect x="860" y="88" width="220" height="30" rx="10" fill="#1E3A5F"/>
+  <rect x="860" y="104" width="220" height="14" fill="#1E3A5F"/>
+  <text x="970" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#89B4FA">▶ Test Runner</text>
+
+  <!-- Test list in runner -->
+  <text x="872" y="134" font-size="9.5" fill="#A6E3A1">✅ AiAssistantControllerTest</text>
+  <rect x="872" y="140" width="194" height="1" fill="#313244"/>
+  <text x="880" y="154" font-size="9" fill="#A6E3A1">  ✅ testProcessQuerySuccess</text>
+  <text x="886" y="168" font-size="8.5" fill="#6C7086">     HTTP 200 OK · action check</text>
+  <text x="880" y="184" font-size="9" fill="#A6E3A1">  ✅ testServiceInvocation</text>
+  <text x="886" y="198" font-size="8.5" fill="#6C7086">     verify(service).processQuery</text>
+
+  <rect x="872" y="206" width="194" height="1" fill="#313244"/>
+  <text x="872" y="222" font-size="9.5" fill="#A6E3A1">✅ AiAssistantServiceTest</text>
+  <rect x="872" y="228" width="194" height="1" fill="#313244"/>
+  <text x="880" y="244" font-size="9" fill="#A6E3A1">  ✅ testAppointmentIntent</text>
+  <text x="880" y="260" font-size="9" fill="#A6E3A1">  ✅ testMedicalRecordIntent</text>
+  <text x="880" y="276" font-size="9" fill="#A6E3A1">  ✅ testCallHomeDoctorIntent</text>
+  <text x="880" y="292" font-size="9" fill="#A6E3A1">  ✅ testUnknownQuery</text>
+
+  <rect x="872" y="300" width="194" height="1" fill="#313244"/>
+  <rect x="872" y="310" width="194" height="24" rx="5" fill="url(#greenBadge)"/>
+  <text x="969" y="326" text-anchor="middle" font-size="10" font-weight="700" fill="#BBF7D0">6 / 6 PASSED  ⏱ 0.42s</text>
+
+  <rect x="872" y="344" width="194" height="48" rx="5" fill="#0F172A" stroke="#1E3A5F" stroke-width="0.8"/>
+  <text x="872" y="358" font-size="8.5" fill="#6C7086">  Framework: JUnit 5 (Jupiter)</text>
+  <text x="872" y="372" font-size="8.5" fill="#6C7086">  Mocking:   Mockito-Kotlin</text>
+  <text x="872" y="386" font-size="8.5" fill="#6C7086">  Pattern:   Given / When / Then</text>
+
+</svg>

@@ -61,5 +61,9 @@ class Patient(
 
     // Тип родства (Сын, Дочь, Мать, и т.д.)
     @Column
-    val relationType: String? = null
+    val relationType: String? = null,
+
+    // ID аккаунта пользователя (для привязки к Gmail)
+    @Column(name = "user_id")
+    val userId: Long? = null
 )

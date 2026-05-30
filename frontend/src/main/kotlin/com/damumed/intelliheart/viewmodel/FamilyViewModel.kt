@@ -89,6 +89,7 @@ class FamilyViewModel : ViewModel() {
         phoneNumber: String,
         address: String,
         medicalHistory: String?,
+        userId: Long?,
         onSuccess: (PatientResponse) -> Unit
     ) {
         viewModelScope.launch {
@@ -103,7 +104,8 @@ class FamilyViewModel : ViewModel() {
                         gender = gender,
                         phoneNumber = phoneNumber,
                         address = address,
-                        medicalHistory = medicalHistory?.takeIf { it.isNotBlank() }
+                        medicalHistory = medicalHistory?.takeIf { it.isNotBlank() },
+                        userId = userId
                     )
                 )
                 _state.value = _state.value.copy(isSaving = false)

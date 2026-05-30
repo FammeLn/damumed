@@ -10,7 +10,7 @@ import com.damumed.intelliheart.R
 
 object NotificationHelper {
     private const val CHANNEL_ID = "intelliheart_notifications"
-    private const val CHANNEL_NAME = "IntelliHeart Notifications"
+    private const val CHANNEL_NAME = "Damumed Notifications"
 
     fun showNotification(context: Context, title: String, message: String) {
         ensureChannel(context)

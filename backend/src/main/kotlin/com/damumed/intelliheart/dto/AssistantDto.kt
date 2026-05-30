@@ -1,12 +1,19 @@
 package com.damumed.intelliheart.dto
 
+data class ChatHistoryItemDto(
+    val sender: String, // "USER" or "BOT"
+    val text: String
+)
+
 /**
  * DTO для запроса к голосовому помощнику
- * Содержит распознанный текст от пользователя
+ * Содержит распознанный текст от пользователя и историю сообщений
  */
 data class AssistantRequest(
     // Распознанный текст от пользователя
-    val text: String
+    val text: String,
+    // История сообщений для передачи контекста в LLM
+    val history: List<ChatHistoryItemDto>? = null
 )
 
 /**

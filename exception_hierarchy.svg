@@ -1,0 +1,291 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 840" width="1100" height="840" font-family="Segoe UI, Arial, sans-serif">
+
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#090E1A"/>
+      <stop offset="100%" style="stop-color:#111827"/>
+    </linearGradient>
+
+    <!-- BaseException Card Gradient -->
+    <linearGradient id="gBase" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E293B"/>
+      <stop offset="100%" style="stop-color:#0F172A"/>
+    </linearGradient>
+
+    <!-- Card Gradients per HTTP status -->
+    <!-- 400 Bad Request (Amber/Orange) -->
+    <linearGradient id="gAmber" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#221500"/>
+      <stop offset="100%" style="stop-color:#120B00"/>
+    </linearGradient>
+    
+    <!-- 404 Not Found (Red/Pink) -->
+    <linearGradient id="gRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#240A0A"/>
+      <stop offset="100%" style="stop-color:#140505"/>
+    </linearGradient>
+
+    <!-- 409 Conflict (Purple) -->
+    <linearGradient id="gPurple" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1D0B2E"/>
+      <stop offset="100%" style="stop-color:#0F051A"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="sh">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+    <filter id="glow" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- UML Generalization Arrow (Hollow Triangle pointing to superclass) -->
+    <marker id="umlInherit" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
+      <polygon points="1 1, 11 5, 1 9" fill="#090E1A" stroke="#94A3B8" stroke-width="1.5"/>
+    </marker>
+  </defs>
+
+  <!-- ════════ BACKGROUND ════════ -->
+  <rect width="1100" height="840" fill="url(#bg)" rx="16"/>
+  <pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
+    <circle cx="15" cy="15" r="0.8" fill="#FFFFFF" opacity="0.06"/>
+  </pattern>
+  <rect width="1100" height="840" fill="url(#dots)" rx="16"/>
+
+  <!-- ════════ TITLE ════════ -->
+  <text x="550" y="46" text-anchor="middle" font-size="22" font-weight="700" fill="#E2E8F0" letter-spacing="0.5">Иерархия пользовательских исключений</text>
+  <text x="550" y="68" text-anchor="middle" font-size="13" fill="#60A5FA">Damumed · Custom Exception Hierarchy</text>
+  <line x1="60" y1="82" x2="1040" y2="82" stroke="#1E40AF" stroke-width="1" opacity="0.5"/>
+
+  <!-- ════════════════════════════════════════════════════
+       INHERITANCE CONNECTOR LINES (Drawn under nodes)
+  ════════════════════════════════════════════════════ -->
+  
+  <!-- Throwable to Exception -->
+  <line x1="550" y1="195" x2="550" y2="161" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#umlInherit)"/>
+  
+  <!-- Exception to RuntimeException -->
+  <line x1="550" y1="285" x2="550" y2="251" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#umlInherit)"/>
+  
+  <!-- RuntimeException to BaseException -->
+  <line x1="550" y1="380" x2="550" y2="341" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#umlInherit)"/>
+
+  <!-- BaseException to Split Point -->
+  <line x1="550" y1="500" x2="550" y2="486" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#umlInherit)"/>
+
+  <!-- Horizontal Split Bar -->
+  <line x1="130" y1="500" x2="970" y2="500" stroke="#94A3B8" stroke-width="1.5"/>
+
+  <!-- Vertical drops to subclasses -->
+  <line x1="130" y1="500" x2="130" y2="530" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="340" y1="500" x2="340" y2="530" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="550" y1="500" x2="550" y2="530" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="760" y1="500" x2="760" y2="530" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="970" y1="500" x2="970" y2="530" stroke="#94A3B8" stroke-width="1.5"/>
+
+
+  <!-- ════════════════════════════════════════════════════
+       LEVEL 1: java.lang.Throwable
+  ════════════════════════════════════════════════════ -->
+  <g filter="url(#sh)">
+    <rect x="450" y="105" width="200" height="50" rx="8" fill="#111827" stroke="#475569" stroke-width="1.2"/>
+  </g>
+  <text x="550" y="127" text-anchor="middle" font-size="11.5" font-weight="700" fill="#94A3B8" font-family="Segoe UI, Arial, sans-serif">Throwable</text>
+  <text x="550" y="141" text-anchor="middle" font-size="9" fill="#64748B" font-family="Segoe UI, Arial, sans-serif">java.lang (Standard Library)</text>
+
+
+  <!-- ════════════════════════════════════════════════════
+       LEVEL 2: java.lang.Exception
+  ════════════════════════════════════════════════════ -->
+  <g filter="url(#sh)">
+    <rect x="450" y="195" width="200" height="50" rx="8" fill="#111827" stroke="#475569" stroke-width="1.2"/>
+  </g>
+  <text x="550" y="217" text-anchor="middle" font-size="11.5" font-weight="700" fill="#94A3B8" font-family="Segoe UI, Arial, sans-serif">Exception</text>
+  <text x="550" y="231" text-anchor="middle" font-size="9" fill="#64748B" font-family="Segoe UI, Arial, sans-serif">java.lang (Standard Library)</text>
+
+
+  <!-- ════════════════════════════════════════════════════
+       LEVEL 3: java.lang.RuntimeException
+  ════════════════════════════════════════════════════ -->
+  <g filter="url(#sh)">
+    <rect x="430" y="285" width="240" height="50" rx="8" fill="#111827" stroke="#475569" stroke-width="1.2"/>
+  </g>
+  <text x="550" y="307" text-anchor="middle" font-size="11.5" font-weight="700" fill="#94A3B8" font-family="Segoe UI, Arial, sans-serif">RuntimeException</text>
+  <text x="550" y="321" text-anchor="middle" font-size="9" fill="#64748B" font-family="Segoe UI, Arial, sans-serif">java.lang (Unchecked exceptions)</text>
+
+
+  <!-- ════════════════════════════════════════════════════
+       LEVEL 4: BaseException (Custom Abstract Class)
+  ════════════════════════════════════════════════════ -->
+  <g filter="url(#sh)">
+    <rect x="400" y="380" width="300" height="100" rx="12" fill="url(#gBase)" stroke="#3B82F6" stroke-width="1.5"/>
+  </g>
+  <!-- Glow header -->
+  <rect x="400" y="380" width="300" height="4" rx="2" fill="#3B82F6" opacity="0.6"/>
+  <text x="550" y="401" text-anchor="middle" font-size="12.5" font-weight="700" fill="#E2E8F0">BaseException</text>
+  <text x="550" y="414" text-anchor="middle" font-size="9" fill="#60A5FA" font-style="italic">«abstract custom base class»</text>
+
+  <!-- Kotlin definition snippet -->
+  <rect x="412" y="422" width="276" height="46" rx="6" fill="#070D19" stroke="#1E293B" stroke-width="0.8"/>
+  <text x="420" y="437" font-size="8.5" fill="#F43F5E" font-family="Courier New, Consolas, monospace">abstract class <tspan fill="#3B82F6">BaseException</tspan>(</text>
+  <text x="430" y="449" font-size="8.5" fill="#94A3B8" font-family="Courier New, Consolas, monospace">message: String</text>
+  <text x="420" y="461" font-size="8.5" fill="#F43F5E" font-family="Courier New, Consolas, monospace">) : <tspan fill="#A78BFA">RuntimeException</tspan>(message)</text>
+
+
+  <!-- ════════════════════════════════════════════════════
+       LEVEL 5: CHILD CUSTOM EXCEPTIONS (5 COLUMNS)
+  ════════════════════════════════════════════════════ -->
+
+  <!-- ─── COLUMN 1: ValidationException ─── -->
+  <g filter="url(#sh)">
+    <rect x="40" y="530" width="180" height="220" rx="12" fill="url(#gAmber)" stroke="#D97706" stroke-width="1.2"/>
+  </g>
+  <rect x="40" y="530" width="180" height="4" rx="2" fill="#D97706" opacity="0.6"/>
+  <text x="130" y="554" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FBBF24">ValidationException</text>
+  <text x="130" y="568" text-anchor="middle" font-size="9" fill="#F59E0B">Ошибка валидации</text>
+  <line x1="50" y1="576" x2="210" y2="576" stroke="#D97706" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Code block -->
+  <rect x="48" y="582" width="164" height="70" rx="6" fill="#0B0600" stroke="#451A03" stroke-width="0.8"/>
+  <text x="54" y="597" font-size="8" fill="#F43F5E" font-family="Courier New, Consolas, monospace">class <tspan fill="#FBBF24">ValidationException</tspan>(</text>
+  <text x="60" y="609" font-size="8" fill="#94A3B8" font-family="Courier New, Consolas, monospace">msg: String =</text>
+  <text x="60" y="621" font-size="8" fill="#10B981" font-family="Courier New, Consolas, monospace">"Деректер дұрыс емес"</text>
+  <text x="54" y="633" font-size="8" fill="#F43F5E" font-family="Courier New, Consolas, monospace">) : <tspan fill="#3B82F6">BaseException</tspan>(msg)</text>
+
+  <!-- HTTP Badge -->
+  <rect x="48" y="660" width="164" height="24" rx="4" fill="#3A1C00" stroke="#D97706" stroke-width="0.8"/>
+  <text x="130" y="676" text-anchor="middle" font-size="9.5" font-weight="700" fill="#FBBF24">HTTP 400 Bad Request</text>
+
+  <!-- Service Source -->
+  <text x="52" y="704" font-size="8.5" fill="#64748B">Выбрасывается в:</text>
+  <text x="52" y="718" font-size="9.5" font-weight="700" fill="#F59E0B" font-family="Courier New, Consolas, monospace">AppointmentService</text>
+
+
+  <!-- ─── COLUMN 2: DoctorNotFoundException ─── -->
+  <g filter="url(#sh)">
+    <rect x="250" y="530" width="180" height="220" rx="12" fill="url(#gRed)" stroke="#DC2626" stroke-width="1.2"/>
+  </g>
+  <rect x="250" y="530" width="180" height="4" rx="2" fill="#DC2626" opacity="0.6"/>
+  <text x="340" y="554" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FCA5A5">DoctorNotFoundException</text>
+  <text x="340" y="568" text-anchor="middle" font-size="9" fill="#EF4444">Врач не найден</text>
+  <line x1="260" y1="576" x2="420" y2="576" stroke="#DC2626" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Code block -->
+  <rect x="258" y="582" width="164" height="70" rx="6" fill="#0C0000" stroke="#450000" stroke-width="0.8"/>
+  <text x="264" y="597" font-size="8" fill="#F43F5E" font-family="Courier New, Consolas, monospace">class <tspan fill="#FCA5A5">DoctorNotFoundEx...</tspan>(</text>
+  <text x="270" y="609" font-size="8" fill="#94A3B8" font-family="Courier New, Consolas, monospace">msg: String =</text>
+  <text x="270" y="621" font-size="8" fill="#10B981" font-family="Courier New, Consolas, monospace">"Дәрігер табылдады"</text>
+  <text x="264" y="633" font-size="8" fill="#F43F5E" font-family="Courier New, Consolas, monospace">) : <tspan fill="#3B82F6">BaseException</tspan>(msg)</text>
+
+  <!-- HTTP Badge -->
+  <rect x="258" y="660" width="164" height="24" rx="4" fill="#3F0A0A" stroke="#DC2626" stroke-width="0.8"/>
+  <text x="340" y="676" text-anchor="middle" font-size="9.5" font-weight="700" fill="#FCA5A5">HTTP 404 Not Found</text>
+
+  <!-- Service Source -->
+  <text x="262" y="704" font-size="8.5" fill="#64748B">Выбрасывается в:</text>
+  <text x="262" y="718" font-size="9.5" font-weight="700" fill="#F87171" font-family="Courier New, Consolas, monospace">DoctorService</text>
+
+
+  <!-- ─── COLUMN 3: PatientNotFoundException ─── -->
+  <g filter="url(#sh)">
+    <rect x="460" y="530" width="180" height="220" rx="12" fill="url(#gRed)" stroke="#DC2626" stroke-width="1.2"/>
+  </g>
+  <rect x="460" y="530" width="180" height="4" rx="2" fill="#DC2626" opacity="0.6"/>
+  <text x="550" y="554" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FCA5A5">PatientNotFoundException</text>
+  <text x="550" y="568" text-anchor="middle" font-size="9" fill="#EF4444">Пациент не найден</text>
+  <line x1="470" y1="576" x2="630" y2="576" stroke="#DC2626" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Code block -->
+  <rect x="468" y="582" width="164" height="70" rx="6" fill="#0C0000" stroke="#450000" stroke-width="0.8"/>
+  <text x="474" y="597" font-size="8" fill="#F43F5E" font-family="Courier New, Consolas, monospace">class <tspan fill="#FCA5A5">PatientNotFoundEx...</tspan>(</text>
+  <text x="480" y="609" font-size="8" fill="#94A3B8" font-family="Courier New, Consolas, monospace">msg: String =</text>
+  <text x="480" y="621" font-size="8" fill="#10B981" font-family="Courier New, Consolas, monospace">"Пациент табылды"</text>
+  <text x="474" y="633" font-size="8" fill="#F43F5E" font-family="Courier New, Consolas, monospace">) : <tspan fill="#3B82F6">BaseException</tspan>(msg)</text>
+
+  <!-- HTTP Badge -->
+  <rect x="468" y="660" width="164" height="24" rx="4" fill="#3F0A0A" stroke="#DC2626" stroke-width="0.8"/>
+  <text x="550" y="676" text-anchor="middle" font-size="9.5" font-weight="700" fill="#FCA5A5">HTTP 404 Not Found</text>
+
+  <!-- Service Source -->
+  <text x="472" y="704" font-size="8.5" fill="#64748B">Выбрасывается в:</text>
+  <text x="472" y="718" font-size="9.5" font-weight="700" fill="#F87171" font-family="Courier New, Consolas, monospace">PatientService</text>
+
+
+  <!-- ─── COLUMN 4: AppointmentNotFoundException ─── -->
+  <g filter="url(#sh)">
+    <rect x="670" y="530" width="180" height="220" rx="12" fill="url(#gRed)" stroke="#DC2626" stroke-width="1.2"/>
+  </g>
+  <rect x="670" y="530" width="180" height="4" rx="2" fill="#DC2626" opacity="0.6"/>
+  <text x="760" y="554" text-anchor="middle" font-size="10" font-weight="700" fill="#FCA5A5">AppointmentNotFoundException</text>
+  <text x="760" y="568" text-anchor="middle" font-size="9" fill="#EF4444">Запись не найдена</text>
+  <line x1="680" y1="576" x2="840" y2="576" stroke="#DC2626" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Code block -->
+  <rect x="678" y="582" width="164" height="70" rx="6" fill="#0C0000" stroke="#450000" stroke-width="0.8"/>
+  <text x="684" y="597" font-size="8" fill="#F43F5E" font-family="Courier New, Consolas, monospace">class <tspan fill="#FCA5A5">AppointmentNotF...</tspan>(</text>
+  <text x="690" y="609" font-size="8" fill="#94A3B8" font-family="Courier New, Consolas, monospace">msg: String =</text>
+  <text x="690" y="621" font-size="8" fill="#10B981" font-family="Courier New, Consolas, monospace">"Өтінім табылмады"</text>
+  <text x="684" y="633" font-size="8" fill="#F43F5E" font-family="Courier New, Consolas, monospace">) : <tspan fill="#3B82F6">BaseException</tspan>(msg)</text>
+
+  <!-- HTTP Badge -->
+  <rect x="678" y="660" width="164" height="24" rx="4" fill="#3F0A0A" stroke="#DC2626" stroke-width="0.8"/>
+  <text x="760" y="676" text-anchor="middle" font-size="9.5" font-weight="700" fill="#FCA5A5">HTTP 404 Not Found</text>
+
+  <!-- Service Source -->
+  <text x="682" y="704" font-size="8.5" fill="#64748B">Выбрасывается в:</text>
+  <text x="682" y="718" font-size="9.5" font-weight="700" fill="#F87171" font-family="Courier New, Consolas, monospace">AppointmentService</text>
+
+
+  <!-- ─── COLUMN 5: AppointmentConflictException ─── -->
+  <g filter="url(#sh)">
+    <rect x="880" y="530" width="180" height="220" rx="12" fill="url(#gPurple)" stroke="#9333EA" stroke-width="1.2"/>
+  </g>
+  <rect x="880" y="530" width="180" height="4" rx="2" fill="#9333EA" opacity="0.6"/>
+  <text x="970" y="554" text-anchor="middle" font-size="10" font-weight="700" fill="#D8B4FE">AppointmentConflictException</text>
+  <text x="970" y="568" text-anchor="middle" font-size="9" fill="#A855F7">Конфликт времени записи</text>
+  <line x1="890" y1="576" x2="1050" y2="576" stroke="#9333EA" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Code block -->
+  <rect x="888" y="582" width="164" height="70" rx="6" fill="#0A0012" stroke="#31004A" stroke-width="0.8"/>
+  <text x="894" y="597" font-size="8" fill="#F43F5E" font-family="Courier New, Consolas, monospace">class <tspan fill="#D8B4FE">AppointmentConfl...</tspan>(</text>
+  <text x="900" y="609" font-size="8" fill="#94A3B8" font-family="Courier New, Consolas, monospace">msg: String =</text>
+  <text x="900" y="621" font-size="8" fill="#10B981" font-family="Courier New, Consolas, monospace">"Бұл уақыт бос емес"</text>
+  <text x="894" y="633" font-size="8" fill="#F43F5E" font-family="Courier New, Consolas, monospace">) : <tspan fill="#3B82F6">BaseException</tspan>(msg)</text>
+
+  <!-- HTTP Badge -->
+  <rect x="888" y="660" width="164" height="24" rx="4" fill="#290747" stroke="#9333EA" stroke-width="0.8"/>
+  <text x="970" y="676" text-anchor="middle" font-size="9.5" font-weight="700" fill="#D8B4FE">HTTP 409 Conflict</text>
+
+  <!-- Service Source -->
+  <text x="892" y="704" font-size="8.5" fill="#64748B">Выбрасывается в:</text>
+  <text x="892" y="718" font-size="9.5" font-weight="700" fill="#C084FC" font-family="Courier New, Consolas, monospace">AppointmentService</text>
+
+
+  <!-- ════════════════════════════════════════════════════
+       FOOTER & LEGEND
+  ════════════════════════════════════════════════════ -->
+  <line x1="60" y1="775" x2="1040" y2="775" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- Legend -->
+  <circle cx="70" cy="796" r="5" fill="#FBBF24"/>
+  <text x="82" y="800" font-size="10" fill="#94A3B8">HTTP 400 (Bad Request)</text>
+
+  <circle cx="240" cy="796" r="5" fill="#F87171"/>
+  <text x="252" y="800" font-size="10" fill="#94A3B8">HTTP 404 (Not Found)</text>
+
+  <circle cx="410" cy="796" r="5" fill="#C084FC"/>
+  <text x="422" y="800" font-size="10" fill="#94A3B8">HTTP 409 (Conflict)</text>
+
+  <text x="590" y="800" font-size="10" fill="#64748B" font-family="Segoe UI, Arial, sans-serif" text-anchor="start">
+    Все кастомные исключения наследуют общие свойства <tspan fill="#3B82F6">BaseException</tspan>, обеспечивая единый формат ответов бэкенда.
+  </text>
+
+  <!-- Small bottom tag -->
+  <text x="550" y="826" text-anchor="middle" font-size="9.5" fill="#1E3A5F">Damumed Health App · Custom Exception Hierarchy · 2026</text>
+
+</svg>

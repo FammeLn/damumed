@@ -47,4 +47,9 @@ interface PatientRepository : JpaRepository<Patient, Long> {
      * Поиск родственников (семейный профиль)
      */
     fun findByPrimaryPatientId(primaryPatientId: Long): List<Patient>
+
+    /**
+     * Поиск пациента, привязанного к аккаунту пользователя
+     */
+    fun findByUserId(userId: Long): Optional<Patient>
 }

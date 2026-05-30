@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import com.damumed.intelliheart.viewmodel.HomeDoctorViewModel
 @Composable
 fun CallDoctorHomeScreen(
     session: AuthSession? = null,
+    onBack: () -> Unit = {},
     onSuccess: () -> Unit = {}
 ) {
     var selectedSymptoms by remember { mutableStateOf(setOf<String>()) }
@@ -66,14 +68,30 @@ fun CallDoctorHomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Заголовок
-        Text(
-            text = "Дәрігерді үйге шақыру",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(top = 8.dp)
-        )
+        // Заголовок с кнопкой Назад
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(top = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Артқа",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            Text(
+                text = "Дәрігерді үйге шақыру",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
 
         // Информационная карточка
         Card(

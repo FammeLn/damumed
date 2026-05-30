@@ -4,14 +4,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.NavType
+import com.damumed.intelliheart.settings.AppSettings
+import com.damumed.intelliheart.settings.AppSettingsViewModel
 import com.damumed.intelliheart.ui.components.BottomNavigationBar
 import com.damumed.intelliheart.ui.auth.AuthSession
 import com.damumed.intelliheart.ui.auth.AuthState
@@ -30,13 +36,36 @@ import com.damumed.intelliheart.ui.screens.AnalysesScreen
 import com.damumed.intelliheart.ui.screens.RemindersScreen
 import com.damumed.intelliheart.ui.screens.ChatSupportScreen
 import com.damumed.intelliheart.ui.screens.SettingsScreen
+import com.damumed.intelliheart.ui.theme.IntelliHeartTheme
 
 /**
- * Основной компонент приложения с навигацией
- * Содержит NavHost для управления экранами и BottomNavigationBar для переключения вкладок
+ * Основной компонент приложения с навигацией.
+ * Содержит NavHost для управления экранами и BottomNavigationBar для переключения вкладок.
+ * Настройки темы и языка хранятся в AppSettingsViewModel (DataStore) и применяются глобально.
  */
 @Composable
 fun IntelliHeartApp() {
+    val settingsVm: AppSettingsViewModel = viewModel()
+    val isDark by settingsVm.isDarkTheme.collectAsState()
+    val language by settingsVm.language.collectAsState()
+
+    IntelliHeartTheme(useDarkTheme = isDark) {
+        IntelliHeartAppContent(
+            isDark = isDark,
+            language = language,
+            onSetDark = { settingsVm.setDarkTheme(it) },
+            onSetLanguage = { settingsVm.setLanguage(it) }
+        )
+    }
+}
+
+@Composable
+private fun IntelliHeartAppContent(
+    isDark: Boolean,
+    language: String,
+    onSetDark: (Boolean) -> Unit,
+    onSetLanguage: (String) -> Unit
+) {
     val authState = remember { mutableStateOf(AuthState()) }
 
     if (!authState.value.isAuthenticated) {
@@ -75,20 +104,35 @@ fun IntelliHeartApp() {
         }
     } else {
         val navController = rememberNavController()
-        val currentRoute = remember { mutableStateOf(Screen.HomeScreen.route) }
+
+        // Отслеживаем активный экран из стека навигации
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route ?: Screen.HomeScreen.route
+
+        // Вкладки нижней панели навигации
+        val bottomTabRoutes = listOf(
+            Screen.HomeScreen.route,
+            Screen.AppointmentScreen.route,
+            Screen.MedicalRecordScreen.route,
+            Screen.NotificationsScreen.route,
+            Screen.ProfileScreen.route
+        )
+
+        // Отображаем нижнюю панель только на основных вкладках
+        val showBottomBar = currentRoute in bottomTabRoutes
 
         Scaffold(
             bottomBar = {
-                if (currentRoute.value != Screen.CallDoctorHomeScreen.route) {
+                if (showBottomBar) {
                     BottomNavigationBar(
-                        currentRoute = currentRoute.value,
+                        currentRoute = currentRoute,
                         onNavigate = { screen ->
-                            currentRoute.value = screen.route
                             navController.navigate(screen.route) {
                                 popUpTo(navController.graph.startDestinationId) {
                                     saveState = true
                                 }
                                 restoreState = true
+                                launchSingleTop = true
                             }
                         }
                     )
@@ -102,8 +146,8 @@ fun IntelliHeartApp() {
                 ) {
                     composable(Screen.HomeScreen.route) {
                         HomeScreenMain(
+                            language = language,
                             onNavigateToAppointments = {
-                                currentRoute.value = Screen.AppointmentScreen.route
                                 navController.navigate(Screen.AppointmentScreen.route) {
                                     popUpTo(navController.graph.startDestinationId) {
                                         saveState = true
@@ -112,11 +156,9 @@ fun IntelliHeartApp() {
                                 }
                             },
                             onNavigateToCallDoctor = {
-                                currentRoute.value = Screen.CallDoctorHomeScreen.route
                                 navController.navigate(Screen.CallDoctorHomeScreen.route)
                             },
                             onNavigateToRecords = {
-                                currentRoute.value = Screen.MedicalRecordScreen.route
                                 navController.navigate(Screen.MedicalRecordScreen.route) {
                                     popUpTo(navController.graph.startDestinationId) {
                                         saveState = true
@@ -125,7 +167,6 @@ fun IntelliHeartApp() {
                                 }
                             },
                             onNavigateToProfile = {
-                                currentRoute.value = Screen.ProfileScreen.route
                                 navController.navigate(Screen.ProfileScreen.route) {
                                     popUpTo(navController.graph.startDestinationId) {
                                         saveState = true
@@ -134,13 +175,15 @@ fun IntelliHeartApp() {
                                 }
                             },
                             onNavigateToAnalyses = {
-                                currentRoute.value = Screen.AnalysesScreen.route
                                 navController.navigate(Screen.AnalysesScreen.route) {
                                     popUpTo(navController.graph.startDestinationId) {
                                         saveState = true
                                     }
                                     restoreState = true
                                 }
+                            },
+                            onNavigateToChat = {
+                                navController.navigate(Screen.ChatSupportScreen.route)
                             }
                         )
                     }
@@ -250,8 +293,10 @@ fun IntelliHeartApp() {
                     composable(Screen.CallDoctorHomeScreen.route) {
                         CallDoctorHomeScreen(
                             session = authState.value.session,
+                            onBack = {
+                                navController.popBackStack()
+                            },
                             onSuccess = {
-                                currentRoute.value = Screen.HomeScreen.route
                                 navController.popBackStack()
                             }
                         )
@@ -259,11 +304,11 @@ fun IntelliHeartApp() {
 
                     composable(Screen.ChatSupportScreen.route) {
                         ChatSupportScreen(
+                            session = authState.value.session,
                             onBack = {
                                 navController.popBackStack()
                             },
                             onNavigateToAppointments = {
-                                currentRoute.value = Screen.AppointmentScreen.route
                                 navController.navigate(Screen.AppointmentScreen.route) {
                                     popUpTo(navController.graph.startDestinationId) {
                                         saveState = true
@@ -272,11 +317,9 @@ fun IntelliHeartApp() {
                                 }
                             },
                             onNavigateToCallDoctor = {
-                                currentRoute.value = Screen.CallDoctorHomeScreen.route
                                 navController.navigate(Screen.CallDoctorHomeScreen.route)
                             },
                             onNavigateToRecords = {
-                                currentRoute.value = Screen.MedicalRecordScreen.route
                                 navController.navigate(Screen.MedicalRecordScreen.route) {
                                     popUpTo(navController.graph.startDestinationId) {
                                         saveState = true
@@ -285,7 +328,6 @@ fun IntelliHeartApp() {
                                 }
                             },
                             onNavigateToProfile = {
-                                currentRoute.value = Screen.ProfileScreen.route
                                 navController.navigate(Screen.ProfileScreen.route) {
                                     popUpTo(navController.graph.startDestinationId) {
                                         saveState = true
@@ -298,6 +340,10 @@ fun IntelliHeartApp() {
 
                     composable(Screen.SettingsScreen.route) {
                         SettingsScreen(
+                            isDark = isDark,
+                            language = language,
+                            onSetDark = onSetDark,
+                            onSetLanguage = onSetLanguage,
                             onBack = {
                                 navController.popBackStack()
                             }

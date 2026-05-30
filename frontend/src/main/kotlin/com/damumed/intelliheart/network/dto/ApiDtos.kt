@@ -124,7 +124,8 @@ data class EmailAuthResponse(
     val userId: Long,
     val email: String,
     val accessToken: String,
-    val expiresAt: Long
+    val expiresAt: Long,
+    val patientId: Long? = null
 )
 
 data class CreateNotificationRequest(
@@ -151,7 +152,8 @@ data class CreatePatientRequest(
     val address: String,
     val medicalHistory: String? = null,
     val primaryPatientId: Long? = null,
-    val relationType: String? = null
+    val relationType: String? = null,
+    val userId: Long? = null
 )
 
 data class PatientResponse(
@@ -165,7 +167,8 @@ data class PatientResponse(
     val medicalHistory: String? = null,
     val isActive: Boolean,
     val primaryPatientId: Long? = null,
-    val relationType: String? = null
+    val relationType: String? = null,
+    val userId: Long? = null
 )
 
 data class CreateMedicalRecordRequest(
@@ -243,3 +246,17 @@ data class AppointmentSlotResponse(
 data class RescheduleAppointmentRequest(
     val newDateTime: LocalDateTime
 )
+
+data class ChatMessageResponse(
+    val id: Long,
+    val patientId: Long,
+    val sender: String,
+    val text: String,
+    val createdAt: LocalDateTime
+)
+
+data class SendMessageRequest(
+    val patientId: Long,
+    val text: String
+)
+

@@ -6,6 +6,7 @@ import com.damumed.intelliheart.entity.UserAccount
 import com.damumed.intelliheart.entity.UserSession
 import com.damumed.intelliheart.repository.UserAccountRepository
 import com.damumed.intelliheart.repository.UserSessionRepository
+import com.damumed.intelliheart.repository.PatientRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -18,7 +19,8 @@ import java.util.UUID
 @Transactional
 class EmailAuthService(
     private val userAccountRepository: UserAccountRepository,
-    private val userSessionRepository: UserSessionRepository
+    private val userSessionRepository: UserSessionRepository,
+    private val patientRepository: PatientRepository
 ) {
     private val passwordEncoder = BCryptPasswordEncoder()
 
@@ -82,11 +84,14 @@ class EmailAuthService(
             )
         )
 
+        val patientId = patientRepository.findByUserId(userId).map { it.id }.orElse(null)
+
         return EmailAuthResponse(
             userId = userId,
             email = user.email,
             accessToken = token,
-            expiresAt = expiresAt
+            expiresAt = expiresAt,
+            patientId = patientId
         )
     }
 }
