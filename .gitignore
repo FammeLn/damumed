@@ -1,0 +1,46 @@
+# Gradle files
+.gradle/
+build/
+*/build/
+backend/build/
+frontend/build/
+bin/
+*/bin/
+backend/bin/
+frontend/bin/
+
+
+# Android Studio / IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+local.properties
+captures/
+.navigation/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.bak
+*.tmp
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Diagrams, reports, and temp files
+*.docx
+*.png
+*.svg
+test.txt
+report.txt

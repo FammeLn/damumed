@@ -84,6 +84,9 @@ dependencies {
     // Gson для JSON обработки
     implementation("com.google.code.gson:gson:2.10.1")
 
+    // DataStore для хранения настроек
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     // Hilt для Dependency Injection
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
