@@ -179,7 +179,7 @@ class AiAssistantService(
             lowerText.contains("үйге") || lowerText.contains("вызов") || 
             lowerText.contains("шақыру") || lowerText.contains("температура") || 
             lowerText.contains("ыстық") || lowerText.contains("ыстығы") || 
-            lowerText.contains("ауырып") || lowerText.contains("нашар") -> {
+            lowerText.contains("ауыр") || lowerText.contains("нашар") -> {
                 AssistantResponse(
                     text = "Дәрігерді үйге шақыру бөліміне өтудеміз. Мұнда үй адресі мен симптомдарды толтырып, сұраныс жібере аласыз.",
                     action = AssistantAction.CALL_HOME_DOCTOR
