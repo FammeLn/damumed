@@ -2,6 +2,7 @@ package com.damumed.intelliheart.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +23,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.damumed.intelliheart.network.dto.AnalysisResponse
 import com.damumed.intelliheart.ui.auth.AuthSession
 import com.damumed.intelliheart.viewmodel.AnalysesViewModel
+import com.damumed.intelliheart.viewmodel.FamilyViewModel
+import com.damumed.intelliheart.util.PdfGenerator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,12 +34,15 @@ fun AnalysesScreen(
 ) {
     val viewModel: AnalysesViewModel = viewModel()
     val state = viewModel.state.value
+    val familyViewModel: FamilyViewModel = viewModel()
+    val familyState = familyViewModel.state.value
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         // Загружаем анализы текущего пациента, если он авторизован
         val patientId = session?.patientId ?: 1L // fallback 1L для теста
         viewModel.loadAnalyses(patientId)
+        familyViewModel.loadFamilyMembers(patientId)
     }
 
     Scaffold(
@@ -70,19 +76,31 @@ fun AnalysesScreen(
                     modifier = Modifier.align(Alignment.Center)
                 )
             } else {
+                val patient = familyState.familyMembers.find { it.id == (session?.patientId ?: 1L) }
+                val patientName = patient?.fullName ?: session?.email ?: "Пациент"
+                val iin = patient?.iin ?: ""
+
                 LazyColumn(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(state.analyses) { analysis ->
-                        AnalysisCard(analysis) { id ->
-                            // Открываем PDF в браузере
-                            // Предполагается, что бекенд запущен на localhost:8080.
-                            // Для реального девайса нужен IP компьютера, например 192.168.x.x
-                            val baseUrl = com.damumed.intelliheart.network.RetrofitClient.getBaseUrl().removeSuffix("/")
-                            val pdfUrl = "$baseUrl/api/analyses/$id/download"
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(pdfUrl))
-                            context.startActivity(intent)
+                        AnalysisCard(analysis) {
+                            try {
+                                val file = PdfGenerator.generateAnalysisPdf(context, analysis, patientName, iin)
+                                val uri = androidx.core.content.FileProvider.getUriForFile(
+                                    context,
+                                    "${context.packageName}.provider",
+                                    file
+                                )
+                                val intent = Intent(Intent.ACTION_VIEW).apply {
+                                    setDataAndType(uri, "application/pdf")
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                context.startActivity(Intent.createChooser(intent, "Анализді ашу"))
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "PDF құру қатесі: ${e.message}", Toast.LENGTH_LONG).show()
+                            }
                         }
                     }
                 }
@@ -92,7 +110,7 @@ fun AnalysesScreen(
 }
 
 @Composable
-fun AnalysisCard(analysis: AnalysisResponse, onDownloadClick: (Long) -> Unit) {
+fun AnalysisCard(analysis: AnalysisResponse, onDownloadClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -136,8 +154,8 @@ fun AnalysisCard(analysis: AnalysisResponse, onDownloadClick: (Long) -> Unit) {
                         MaterialTheme.colorScheme.error
                 )
                 
-                if (analysis.hasPdf) {
-                    OutlinedButton(onClick = { onDownloadClick(analysis.id) }) {
+                if (analysis.status == "ГОТОВ") {
+                    OutlinedButton(onClick = { onDownloadClick() }) {
                         Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("PDF жүктеу")
