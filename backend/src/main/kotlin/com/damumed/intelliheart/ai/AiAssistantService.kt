@@ -5,7 +5,9 @@ import com.damumed.intelliheart.dto.AssistantRequest
 import com.damumed.intelliheart.dto.AssistantResponse
 import com.damumed.intelliheart.dto.ChatHistoryItemDto
 import com.damumed.intelliheart.dto.ChatMessageResponseDto
+import com.damumed.intelliheart.entity.Analysis
 import com.damumed.intelliheart.entity.ChatMessage
+import com.damumed.intelliheart.repository.AnalysisRepository
 import com.damumed.intelliheart.repository.ChatMessageRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -20,7 +22,8 @@ import java.time.LocalDateTime
 @Service
 class AiAssistantService(
     private val restTemplate: RestTemplate,
-    private val chatMessageRepository: ChatMessageRepository
+    private val chatMessageRepository: ChatMessageRepository,
+    private val analysisRepository: AnalysisRepository
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -67,6 +70,46 @@ class AiAssistantService(
                 text = text
             )
         )
+
+        // Проверка на команду создания анализа голосом
+        val lowerText = text.lowercase()
+        if (lowerText.contains("анализ жаса") || lowerText.contains("талдау дайында") || 
+            lowerText.contains("сделай анализ") || lowerText.contains("создай анализ") || 
+            lowerText.contains("талдау жаса") || lowerText.contains("анализ дайында")) {
+            
+            val isBiochem = lowerText.contains("биохим")
+            val title = if (isBiochem) "Биохимиялық қан анализі" else "Жалпы қан анализі"
+            
+            val newAnalysis = Analysis(
+                patientId = patientId,
+                title = title,
+                date = java.time.LocalDate.now(),
+                clinic = "IntelliHeart Clinic",
+                status = "ГОТОВ"
+            )
+            analysisRepository.save(newAnalysis)
+
+            val botResponseText = if (lowerText.contains("сделай") || lowerText.contains("создай")) {
+                "Анализ '$title' успешно создан и готов! Направляю вас в раздел анализов для просмотра и скачивания PDF."
+            } else {
+                "'$title' сәтті дайындалды! Оны қарау және PDF жүктеу үшін анализдар бөліміне бағыттаймын."
+            }
+
+            val botResponse = AssistantResponse(
+                text = botResponseText,
+                action = AssistantAction.NAVIGATE_TO_RECORDS
+            )
+
+            chatMessageRepository.save(
+                ChatMessage(
+                    patientId = patientId,
+                    sender = "BOT",
+                    text = botResponseText
+                )
+            )
+
+            return botResponse
+        }
 
         // 3. Обрабатываем запрос с контекстом истории
         val response = processQuery(AssistantRequest(text, history))

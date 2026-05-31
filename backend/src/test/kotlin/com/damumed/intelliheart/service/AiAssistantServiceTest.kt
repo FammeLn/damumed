@@ -24,7 +24,8 @@ class AiAssistantServiceTest {
         // Инициализируем сервис перед каждым тестом
         val restTemplate = mock<org.springframework.web.client.RestTemplate>()
         val chatMessageRepository = mock<ChatMessageRepository>()
-        service = AiAssistantService(restTemplate, chatMessageRepository)
+        val analysisRepository = mock<com.damumed.intelliheart.repository.AnalysisRepository>()
+        service = AiAssistantService(restTemplate, chatMessageRepository, analysisRepository)
     }
 
     /**
