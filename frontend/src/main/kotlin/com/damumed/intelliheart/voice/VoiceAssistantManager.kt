@@ -2,6 +2,8 @@ package com.damumed.intelliheart.voice
 
 import android.os.Bundle
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.speech.RecognizerIntent
 import android.speech.RecognitionListener
 import android.speech.SpeechRecognizer
@@ -49,6 +51,10 @@ class VoiceAssistantManager(private val context: Context) {
     fun startListening() {
         if (speechRecognizer == null) {
             onErrorCallback?.invoke("Бұл құрылғыда дауыс тану қызметі қолжетімсіз")
+            return
+        }
+        if (!isNetworkAvailable(appContext)) {
+            onErrorCallback?.invoke("Дауыс көмекшісін пайдалану үшін интернет байланысы қажет. Желіні тексеріңіз")
             return
         }
         if (isListening) return
@@ -157,5 +163,12 @@ class VoiceAssistantManager(private val context: Context) {
             SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Сөйлеу уақыты бітті"
             else -> "Дауыс тануда белгісіз қате пайда болды"
         }
+    }
+
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 }
