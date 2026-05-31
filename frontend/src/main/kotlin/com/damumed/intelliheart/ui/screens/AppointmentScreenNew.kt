@@ -1,5 +1,6 @@
 package com.damumed.intelliheart.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,15 +10,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -271,6 +281,7 @@ private fun DoctorCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppointmentCard(
     appointment: AppointmentResponse,
@@ -279,6 +290,67 @@ private fun AppointmentCard(
 ) {
     var rescheduleDate by remember { mutableStateOf("") }
     var rescheduleTime by remember { mutableStateOf("") }
+
+    var showRescheduleDatePicker by remember { mutableStateOf(false) }
+    var showRescheduleTimePicker by remember { mutableStateOf(false) }
+
+    if (showRescheduleDatePicker) {
+        val datePickerState = rememberDatePickerState()
+        DatePickerDialog(
+            onDismissRequest = { showRescheduleDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val selectedLocalDate = java.time.Instant.ofEpochMilli(millis)
+                                .atZone(java.time.ZoneId.of("UTC"))
+                                .toLocalDate()
+                            rescheduleDate = selectedLocalDate.toString()
+                        }
+                        showRescheduleDatePicker = false
+                    }
+                ) {
+                    Text("Мақұлдау")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRescheduleDatePicker = false }) {
+                    Text("Бас тарту")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    if (showRescheduleTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = 12,
+            initialMinute = 0,
+            is24Hour = true
+        )
+        AlertDialog(
+            onDismissRequest = { showRescheduleTimePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        rescheduleTime = String.format("%02d:%02d", timePickerState.hour, timePickerState.minute)
+                        showRescheduleTimePicker = false
+                    }
+                ) {
+                    Text("Мақұлдау")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRescheduleTimePicker = false }) {
+                    Text("Бас тарту")
+                }
+            },
+            text = {
+                TimePicker(state = timePickerState)
+            }
+        )
+    }
 
     Card(
         modifier = Modifier
@@ -301,23 +373,51 @@ private fun AppointmentCard(
                 Button(onClick = onCancel) { Text("Болдырмау") }
             }
             Text(
-                text = "Ауыстыру (YYYY-MM-DD / HH:MM)",
+                text = "Ауыстыру",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = rescheduleDate,
-                    onValueChange = { rescheduleDate = it },
-                    label = { Text("Күні") },
-                    modifier = Modifier.weight(1f)
-                )
-                OutlinedTextField(
-                    value = rescheduleTime,
-                    onValueChange = { rescheduleTime = it },
-                    label = { Text("Уақыты") },
-                    modifier = Modifier.weight(1f)
-                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { showRescheduleDatePicker = true }
+                ) {
+                    OutlinedTextField(
+                        value = rescheduleDate,
+                        onValueChange = {},
+                        label = { Text("Күні") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        readOnly = true,
+                        enabled = false,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledBorderColor = MaterialTheme.colorScheme.outline,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { showRescheduleTimePicker = true }
+                ) {
+                    OutlinedTextField(
+                        value = rescheduleTime,
+                        onValueChange = {},
+                        label = { Text("Уақыты") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        readOnly = true,
+                        enabled = false,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledBorderColor = MaterialTheme.colorScheme.outline,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                }
             }
             Button(
                 onClick = {
