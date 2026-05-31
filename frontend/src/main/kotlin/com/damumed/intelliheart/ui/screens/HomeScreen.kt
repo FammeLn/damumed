@@ -28,8 +28,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.damumed.intelliheart.settings.AppSettings
 import com.damumed.intelliheart.ui.theme.IntelliHeartColors
+import com.damumed.intelliheart.viewmodel.HomeScreenViewModel
+import com.damumed.intelliheart.voice.TextToSpeechManager
 import com.damumed.intelliheart.voice.VoiceAssistantManager
 
 /**
@@ -47,8 +50,12 @@ fun HomeScreenMain(
     onNavigateToChat: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val recognizedText = remember { mutableStateOf("") }
+    val viewModel: HomeScreenViewModel = viewModel()
+    val screenState by viewModel.screenState
+
     val voiceManager = remember { VoiceAssistantManager(context) }
+    val ttsManager = remember { TextToSpeechManager(context) }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -61,7 +68,7 @@ fun HomeScreenMain(
 
     LaunchedEffect(context) {
         voiceManager.setOnResultCallback { text ->
-            recognizedText.value = text
+            viewModel.processRecognizedText(text)
             Toast.makeText(context, "Танылған мәтін: $text", Toast.LENGTH_SHORT).show()
         }
         voiceManager.setOnErrorCallback { error ->
@@ -69,9 +76,36 @@ fun HomeScreenMain(
         }
     }
 
+    LaunchedEffect(screenState.messages) {
+        val lastMessage = screenState.messages.lastOrNull()
+        if (lastMessage?.sender == "ASSISTANT") {
+            // Озвучиваем ответ помощника
+            if (ttsManager.isReady()) {
+                ttsManager.speak(lastMessage.text)
+            }
+            
+            // Выполняем навигационное действие немедленно
+            when (screenState.lastAction) {
+                "NAVIGATE_TO_APPOINTMENT" -> {
+                    onNavigateToAppointments()
+                }
+                "CALL_HOME_DOCTOR" -> {
+                    onNavigateToCallDoctor()
+                }
+                "NAVIGATE_TO_RECORDS" -> {
+                    onNavigateToRecords()
+                }
+                "NAVIGATE_TO_PROFILE" -> {
+                    onNavigateToProfile()
+                }
+            }
+        }
+    }
+
     DisposableEffect(Unit) {
         onDispose {
             voiceManager.destroy()
+            ttsManager.shutdown()
         }
     }
 
@@ -269,8 +303,7 @@ fun HomeScreenMain(
                     }
                 }
             }
-
-            if (recognizedText.value.isNotEmpty()) {
+            if (screenState.recognizedText.isNotEmpty()) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -281,7 +314,7 @@ fun HomeScreenMain(
                     )
                 ) {
                     Text(
-                        text = "Танылған мәтін: ${recognizedText.value}",
+                        text = "Танылған мәтін: ${screenState.recognizedText}",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.secondary,
                             fontWeight = FontWeight.SemiBold
@@ -308,14 +341,16 @@ fun HomeScreenMain(
             )
             FloatingActionButton(
                 onClick = {
-                    val hasAudioPermission = ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.RECORD_AUDIO
-                    ) == PackageManager.PERMISSION_GRANTED
-                    if (hasAudioPermission) {
-                        voiceManager.startListening()
-                    } else {
-                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                    if (!screenState.isLoading) {
+                        val hasAudioPermission = ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.RECORD_AUDIO
+                        ) == PackageManager.PERMISSION_GRANTED
+                        if (hasAudioPermission) {
+                            voiceManager.startListening()
+                        } else {
+                            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                        }
                     }
                 },
                 modifier = Modifier.align(Alignment.Center),
@@ -323,10 +358,18 @@ fun HomeScreenMain(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = CircleShape
             ) {
-                Icon(
-                    imageVector = Icons.Default.Mic,
-                    contentDescription = "Дауыс көмекшісі"
-                )
+                if (screenState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Mic,
+                        contentDescription = "Дауыс көмекшісі"
+                    )
+                }
             }
         }
     }
